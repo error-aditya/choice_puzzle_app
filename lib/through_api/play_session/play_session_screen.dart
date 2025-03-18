@@ -8,7 +8,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:choice_puzzle_app/src/level_selection/jigsaw_info.dart';
+import 'package:choice_puzzle_app/through_api/level_selection/jigsaw_info.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart' hide Level;
 import 'package:lottie/lottie.dart';

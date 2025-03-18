@@ -1,5 +1,5 @@
-import 'package:choice_puzzle_app/src/play_session/collision/PuzzleHitbox.dart';
-import 'package:choice_puzzle_app/src/play_session/shape_type.dart';
+import 'package:choice_puzzle_app/through_api/play_session/collision/PuzzleHitbox.dart';
+import 'package:choice_puzzle_app/through_api/play_session/shape_type.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';

@@ -10,7 +10,7 @@ import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:choice_puzzle_app/src/level_selection/jigsaw_info.dart';
+import 'package:choice_puzzle_app/through_api/level_selection/jigsaw_info.dart';
 
 import '../collision/puzzle_collision_detection.dart';
 import '../shape_type.dart';

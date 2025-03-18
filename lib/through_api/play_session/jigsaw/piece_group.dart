@@ -1,4 +1,4 @@
-import 'package:choice_puzzle_app/src/play_session/jigsaw/piece_component.dart';
+import 'package:choice_puzzle_app/through_api/play_session/jigsaw/piece_component.dart';
 
 ///
 /// 使用组去管理所有碎片，在一起的碎片都属于同一个组

@@ -1,5 +1,6 @@
-import 'package:choice_puzzle_app/src/level_selection/jigsaw_info.dart';
-import 'package:choice_puzzle_app/src/level_selection/piece_image.dart';
+// import 'package:choice_puzzle_app/src/level_selection/jigsaw_info.dart';
+import 'package:choice_puzzle_app/through_api/level_selection/jigsaw_info.dart';
+import 'package:choice_puzzle_app/through_api/level_selection/piece_image.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_jigsaw_puzzle/src/level_selection/jigsaw_info.dart';
 // import 'package:flutter_jigsaw_puzzle/src/level_selection/piece_image.dart';
@@ -27,23 +28,23 @@ class JigsawGridItem extends StatelessWidget {
         child: Stack(
           children: [
             PieceImage(pictureUrl: info.smallimage),
-            Positioned(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: 150),
-                padding: const EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: Colors.grey,
-                ),
-                child: Text(
-                  '@${info.photographer}',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-              bottom: 2,
-              right: 6,
-            ),
+            // Positioned(
+            //   child: Container(
+            //     constraints: BoxConstraints(maxWidth: 150),
+            //     padding: const EdgeInsets.all(2.0),
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(5),
+            //       color: Colors.grey,
+            //     ),
+            //     child: Text(
+            //       '@${info.photographer}',
+            //       overflow: TextOverflow.ellipsis,
+            //       maxLines: 1,
+            //     ),
+            //   ),
+            //   bottom: 2,
+            //   right: 6,
+            // ),
           ],
         ),
       ),

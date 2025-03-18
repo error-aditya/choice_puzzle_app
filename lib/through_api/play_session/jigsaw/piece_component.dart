@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:choice_puzzle_app/src/play_session/jigsaw/jigsaw_game.dart';
+import 'package:choice_puzzle_app/through_api/play_session/jigsaw/jigsaw_game.dart';
 
 import '../collision/PuzzleHitbox.dart';
 import '../shape_type.dart';
