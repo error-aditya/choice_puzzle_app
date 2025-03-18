@@ -21,7 +21,7 @@ class PuzzleGameScreen extends StatefulWidget {
 }
 
 class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
-  late PuzzleGame game;
+  PuzzleGame? game;
   bool gameLoaded = false;
 
   @override
@@ -34,6 +34,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
     return await decodeImageFromList(bytes);
   }
 
+
   Future<void> _initializeGame() async {
     final puzzleImage = await _loadImage(widget.imageBytes);
     // Initialize with temporary values; we'll update layout responsively.
@@ -41,12 +42,12 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
       puzzleImage: puzzleImage,
       rows: widget.rows,
       cols: widget.cols,
-      boardWidth: 300.0,
-      boardHeight: 300.0,
+      boardWidth: 289.0,
+      boardHeight: 289.0,
       boardOffset: Vector2(20, 20),
       piecesInTray: true,
     );
-    await game.onLoad();
+    await game!.onLoad();
     setState(() {
       gameLoaded = true;
     });
@@ -56,20 +57,27 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   void _showReferenceImage() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        content: Image.memory(widget.imageBytes),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          )
-        ],
-      ),
+      builder:
+          (context) => AlertDialog(
+            content: Image.memory(widget.imageBytes),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Close"),
+              ),
+            ],
+          ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!gameLoaded || game == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Puzzle Game")),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
     // Use LayoutBuilder to get the current available width and height.
     return OrientationBuilder(
       builder: (context, orientation) {
@@ -79,7 +87,10 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
         final gameHeight = size.height;
 
         // Optionally, you can update your game dimensions here.
-        game.updateLayout(gameWidth, gameHeight);
+        game!.updateLayout(
+          size.width,
+          size.height,
+        ); // Update game dimensions here., gameHeight);
 
         return Scaffold(
           appBar: AppBar(title: const Text("Puzzle Game")),
@@ -87,7 +98,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
             child: SizedBox(
               width: gameWidth,
               height: gameHeight,
-              child: GameWidget(game: game),
+              child: GameWidget(game: game!),
             ),
           ),
           floatingActionButton: FloatingActionButton(

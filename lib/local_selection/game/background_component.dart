@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 
 class BackgroundComponent extends PositionComponent {
   double width;
@@ -12,7 +13,7 @@ class BackgroundComponent extends PositionComponent {
   }) : super(position: position, size: Vector2(width, height));
 
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas) {  
     final paint = Paint()
       ..color = Color(0xFFCCCCCC)
       ..style = PaintingStyle.stroke

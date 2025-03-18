@@ -3,7 +3,7 @@ import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 
 class PuzzlePiece extends SpriteComponent with DragCallbacks {
-  // Correct position is mutable.
+  // Make correctPosition mutable.
   Vector2 correctPosition;
   bool isPlaced = false;
   final double snapThreshold = 20.0;
@@ -19,13 +19,18 @@ class PuzzlePiece extends SpriteComponent with DragCallbacks {
 
   @override
   void render(Canvas canvas) {
+    // Draw the sprite normally.
     super.render(canvas);
-    // Optional: draw an outline for debugging.
-    final paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-    canvas.drawRect(size.toRect(), paint);
+    // OPTIONAL: Draw an outline for debugging.
+    // If the outline is causing extra visible area, you can remove or reduce it.
+    // Here we draw it with a smaller stroke width and semi-transparent color.
+    final paint =
+        Paint()
+          ..color = Colors.black.withOpacity(0.5)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1; // Reduced stroke width.
+    // Draw the outline strictly inside the bounds.
+    canvas.drawRect(Offset.zero & Size(size.x, size.y), paint);
   }
 
   @override

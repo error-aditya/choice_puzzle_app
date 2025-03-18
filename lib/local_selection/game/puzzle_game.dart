@@ -107,7 +107,7 @@ class PuzzleGame extends FlameGame {
     final gameHeight = canvasSize.y;
 
     // Set board dimensions: make the board 60% of the game width (square).
-    boardWidth = gameWidth * 0.7;
+    boardWidth = gameWidth * 0.73;
     boardHeight = boardWidth;
     // Center the board horizontally and place it near the top (e.g. 15% from the top).
     boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.15);
