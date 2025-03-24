@@ -57,6 +57,7 @@ class PuzzleGame extends FlameGame {
 
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
+        index++;
         final srcX = (j * puzzleImage.width / cols).toDouble();
         final srcY = (i * puzzleImage.height / rows).toDouble();
         final srcWidth = (puzzleImage.width / cols).toDouble();
@@ -93,6 +94,38 @@ class PuzzleGame extends FlameGame {
         add(piece);
       }
     }
+  }
+
+  void checkIfSolved() {
+  int placedCount = 0;
+  int totalPieces = rows * cols;
+
+  for (final piece in children.whereType<PuzzlePiece>()) {
+    if (piece.isPlaced) {
+      placedCount++;
+    }
+  }
+
+  print("🧩 Pieces placed: $placedCount / $totalPieces");
+
+  if (placedCount == totalPieces) {
+    print("🎉 Puzzle Completed! Calling callback...");
+    _showCompletionDialog(); // Make sure this is running
+  }
+}
+
+
+  bool isPuzzleSolved() {
+    for (final piece in children.whereType<PuzzlePiece>()) {
+      if (!piece.isPlaced) {
+        return false; // If any piece is not placed, puzzle is not solved
+      }
+    }
+    return true; // All pieces are correctly placed
+  }
+
+  void _showCompletionDialog() {
+    overlays.add('PuzzleCompleted'); // Assuming you use overlays for UI dialogs
   }
 
   void updateLayout(double gameWidth, double gameHeight) {

@@ -2,6 +2,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 
+import 'puzzle_game.dart';
+
 class PuzzlePiece extends SpriteComponent with DragCallbacks {
   // Make correctPosition mutable.
   Vector2 correctPosition;
@@ -16,6 +18,23 @@ class PuzzlePiece extends SpriteComponent with DragCallbacks {
     required Vector2 position,
     required this.pieceIndex,
   }) : super(sprite: sprite, size: size, position: position);
+
+  void snapToCorrectPosition() {
+    print("Trying to place piece $pieceIndex...");
+
+    position = correctPosition;
+    isPlaced = true;
+
+    print("Piece $pieceIndex placed!");
+
+    final gameRef = findGame() as PuzzleGame?;
+    if (gameRef == null) {
+      print("Game reference is null!");
+    } else {
+      print("Calling checkIfSolved()");
+      gameRef.checkIfSolved();
+    }
+  }
 
   @override
   void render(Canvas canvas) {
@@ -40,11 +59,27 @@ class PuzzlePiece extends SpriteComponent with DragCallbacks {
     }
   }
 
+  bool isCorrectlyPlaced() {
+    return (position - correctPosition).length <
+        5.0; // Small threshold for snapping
+  }
+
   @override
   void onDragEnd(DragEndEvent event) {
     if ((position - correctPosition).length < snapThreshold) {
       position = correctPosition.clone();
       isPlaced = true;
     }
+    if (isCorrectlyPlaced()) {
+      isPlaced = true;
+      position = correctPosition;
+      print("✅ Piece ${pieceIndex} placed correctly!");
+    } else {
+      isPlaced = false;
+      print("❌ Piece ${pieceIndex} is NOT in correct position.");
+    }
+
+    final gameRef = findGame() as PuzzleGame?;
+    gameRef?.checkIfSolved(); // This must be called!
   }
 }
