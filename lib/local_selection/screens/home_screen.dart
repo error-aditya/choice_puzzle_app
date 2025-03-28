@@ -1,11 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:audioplayers/audioplayers.dart';
+import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../game/puzzle_piece.dart';
 import 'puzzle_game_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,25 +18,186 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ImagePicker _picker = ImagePicker();
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool isPlaying = false;
   int completedPuzzles = 0;
-  final int requiredPuzzles = 10;
+  final int requiredPuzzles = 100;
 
   final List<Map<String, int>> difficulties = [
     {'rows': 2, 'cols': 2},
     {'rows': 4, 'cols': 4},
-    {'rows': 4, 'cols': 5},
-    {'rows': 5, 'cols': 6},
+    {'rows': 5, 'cols': 5},
+    {'rows': 6, 'cols': 6},
+    {'rows': 7, 'cols': 7},
+    {'rows': 8, 'cols': 8},
+    {'rows': 9, 'cols': 9},
+    {'rows': 10, 'cols': 10},
+    {'rows': 11, 'cols': 11},
+    // {'rows': 0, 'cols': 0},
   ];
 
-  final List<String> difficultyNames = [
-    '2x2\nPuzzle',
-    '4x4\nPuzzle',
-    '4x5\nPuzzle',
-    '5x6\nPuzzle',
+  final List<String> assetImages = [
+    'assets/puzzle_images/doraemon.svg',
+    'assets/puzzle_images/anime_images/pirate_flag.jpg',
+    'assets/puzzle_images/car.jpg',
+    'assets/puzzle_images/anime_images/luffy_gear5.jpg',
+    'assets/puzzle_images/dressed_cat.jpg',
+    'assets/puzzle_images/super_mario.png',
+    'assets/puzzle_images/eye.jpg',
+    'assets/puzzle_images/anime_images/strawhats.jpg',
+    'assets/puzzle_images/anime_images/luffy.jpg',
+    'assets/puzzle_images/illusion_2.jpg',
+    'assets/puzzle_images/fox.jpg',
+    'assets/puzzle_images/minar.jpg',
+    'assets/puzzle_images/mountain.jpg',
+    'assets/puzzle_images/puppies.jpg',
+    'assets/puzzle_images/anime_images/luffy.jpg',
+    'assets/puzzle_images/illusion_3.jpg',
+    'assets/puzzle_images/motu_patlu.jpg',
+    'assets/puzzle_images/space_earth_photo.jpg',
+    'assets/puzzle_images/sunset_bird.jpg',
+    'assets/puzzle_images/tiger.jpg',
+    'assets/puzzle_images/trees_1.jpg',
+    'assets/puzzle_images/illusion_1.jpg',
+    'assets/puzzle_images/anime_images/timeskip_with_sunny.jpg',
+    'assets/puzzle_images/anime_images/naruto.svg',
   ];
+
+  // final List<String> difficultyNames = [
+  //   '2x2\nPuzzle',
+  //   '4x4\nPuzzle',
+  //   '5x5\nPuzzle',
+  //   '6x6\nPuzzle',
+  //   '7x7\nPuzzle',
+  //   '8x8\nPuzzle',
+  //   '9x9\nPuzzle',
+  //   '10x10\nPuzzle',
+  //   'Easy',
+  //   'Choice Puzzle',
+  // ];
+
+  Future<void> _loadAssetImage(int index, Map<String, int> difficulty) async {
+    int userRows = difficulty['rows']!;
+    int userCols = difficulty['cols']!;
+
+    // Load image bytes from assets
+    ByteData data = await rootBundle.load(assetImages[index]);
+    Uint8List bytes = data.buffer.asUint8List();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => PuzzleGameScreen(
+              imageBytes: bytes,
+              rows: userRows,
+              cols: userCols,
+              onPuzzleCompleted: () => _updateProgress(),
+            ),
+      ),
+    );
+  }
+
+  _showDifficultySelectionDialog(int imageIndex) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1D2B64), Color(0xFFF8CDDA)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Choose difficulty level",
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Column(
+                      children:
+                          difficulties.map((difficulty) {
+                            String difficultyText =
+                                "${difficulty['rows']} x ${difficulty['cols']} Puzzle";
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(
+                                    255,
+                                    34,
+                                    73,
+                                    201,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 10,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  _loadAssetImage(imageIndex, difficulty);
+                                },
+                                child: Text(
+                                  difficultyText,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                    ),
+                    SizedBox(height: 10),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 23, 46, 136),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   int selectedDifficultyIndex = 0;
 
@@ -41,142 +207,80 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadProgress();
   }
 
+  @override
+  void dispose() {
+    _updateProgress();
+    super.dispose();
+  }
+
+  
   Future<void> _loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       completedPuzzles = prefs.getInt('completed2x2') ?? 0;
     });
+    print("Loaded completedPuzzles: $completedPuzzles"); // Debugging log
   }
 
   Future<void> _updateProgress() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      completedPuzzles++;
-    });
-    prefs.setInt('completed2x2', completedPuzzles);
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose(); // Stop music when screen is closed
-    super.dispose();
-  }
-
-  Future<void> _playBackgroundMusic() async {
-    await _audioPlayer.play(
-      AssetSource('music/Mr_Smith-Azul.mp3'),
-    ); // Play loop
-    _audioPlayer.setReleaseMode(ReleaseMode.loop); // Loop music
-  }
-
-  Future<void> _stopMusic() async {
-    await _audioPlayer.stop(); // Stop music if needed
-  }
-
-  void _showCompletionDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text("Puzzle Completed!"),
-            content: Text("Congratulations! You've completed the puzzle."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("OK"),
-              ),
-            ],
-          ),
-    );
-  }
-
-  Future<void> _pickImage(int index) async {
-    if (index > 0 && completedPuzzles < requiredPuzzles) {
-      _showLockedDialog();
-      return;
-    }
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      final selectedDifficulty = difficulties[selectedDifficultyIndex];
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder:
-              (context) => PuzzleGameScreen(
-                imageBytes: bytes,
-                rows: selectedDifficulty['rows']!,
-                cols: selectedDifficulty['cols']!,
-                onPuzzleCompleted: _updateProgress,
-              ),
-        ),
-      );
+    await prefs.setInt('completed2x2', completedPuzzles);
+    print("Updated completedPuzzles: $completedPuzzles"); // Debug log
+    if (completedPuzzles >= requiredPuzzles) {
+      await prefs.setBool('allUnlocked', true);
     }
   }
 
-  void _showLockedDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text("Level Locked"),
-            content: Text(
-              "Solve the 2x2 puzzle $requiredPuzzles times to unlock this level.\n\n"
-              "Progress: $completedPuzzles/$requiredPuzzles",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("OK"),
-              ),
-            ],
-          ),
-    );
-  }
+  // Future<void> _pickImage(int index) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   bool allUnlocked = prefs.getBool('allUnlocked') ?? false;
+
+  //   if (index < difficulties.length - 1 &&
+  //       index > 0 &&
+  //       !allUnlocked &&
+  //       index > 0 &&
+  //       completedPuzzles < requiredPuzzles) {
+  //     _showLockedDialog();
+  //     return;
+  //   }
+
+  //   int? userRows;
+  //   int? userCols;
+
+  //   // if (index == difficultyNames.length - 1) {
+  //   //   // If "Choice Puzzle" is selected
+  //   //   final customSize = await _showCustomSizeDialog();
+  //   //   if (customSize == null) return;
+  //   //   userRows = customSize['rows'];
+  //   //   userCols = customSize['cols'];
+  //   // } else {
+  //   //   userRows = difficulties[index]['rows'];
+  //   //   userCols = difficulties[index]['cols'];
+  //   // }
+
+  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  //   if (pickedFile != null) {
+  //     final bytes = await pickedFile.readAsBytes();
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder:
+  //             (context) => PuzzleGameScreen(
+  //               imageBytes: bytes,
+  //               rows: userRows!,
+  //               cols: userCols!,
+  //               onPuzzleCompleted: () => _updateProgress(),
+  //             ),
+  //       ),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            isPlaying ? Icons.music_note : Icons.music_off,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            setState(() {
-              isPlaying = !isPlaying;
-            });
-            isPlaying ? _playBackgroundMusic() : _stopMusic();
-          },
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF24C6DC), Color(0xFF514A9D)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        title: Shimmer.fromColors(
-          baseColor: Colors.white,
-          highlightColor: Colors.blue[200]!,
-          child: Text(
-            'PUZZLE GAME',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ),
-        centerTitle: true,
-      ),
       body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF1D2B64), Color(0xFFF8CDDA)],
@@ -185,67 +289,67 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: .7,
-                ),
-                itemCount: difficultyNames.length,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  bool isLocked =
-                      index > 0 && completedPuzzles < requiredPuzzles;
-                  return GestureDetector(
-                    onTap: () async {
-                      _pickImage(index);
-                      // final pickedFile = await _picker.pickImage(
-                      //   source: ImageSource.gallery,
-                      // );
-                      // if (pickedFile != null) {
-                      //   final bytes = await pickedFile.readAsBytes();
-                      //   final selectedDifficulty =
-                      //       difficulties[index]; // 👈 Select difficulty from list
-
-                      //   Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder:
-                      //           (context) => PuzzleGameScreen(
-                      //             imageBytes: bytes,
-                      //             rows: selectedDifficulty['rows']!,
-                      //             cols: selectedDifficulty['cols']!,
-                      //           ),
-                      //     ),
-                      //   );
-                      // }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isLocked ? Colors.grey : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          difficultyNames[index],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: .8,
+                  ),
+                  addRepaintBoundaries: true,
+                  itemCount: assetImages.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    bool isLocked =
+                        index > 0 && completedPuzzles < requiredPuzzles;
+                    return GestureDetector(
+                      onTap: () async {
+                        if (index < assetImages.length) {
+                          await _showDifficultySelectionDialog(index);
+                        }
+                        // final pickedFile = await _picker.pickImage(
+                        //   source: ImageSource.gallery,
+                        // );
+                        // if (pickedFile != null) {
+                        //   final bytes = await pickedFile.readAsBytes();
+                        //   final selectedDifficulty =
+                        //       difficulties[index]; // Select difficulty from list
+                        //   Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder:
+                        //           (context) => PuzzleGameScreen(
+                        //             imageBytes: bytes,
+                        //             rows: selectedDifficulty['rows']!,
+                        //             cols: selectedDifficulty['cols']!,
+                        //           ),
+                        //     ),
+                        //   );
+                        // }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image(
+                            image: AssetImage(assetImages[index]),
+                            fit: BoxFit.fill,
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

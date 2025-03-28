@@ -1,13 +1,23 @@
+import 'dart:ui';
+
 enum ShapeType {
   top,
   right,
   bottom,
   left,
+  square, // Default shape for the image
 }
 
 class Shape {
-  var topTab = 0;
-  var rightTab = 0;
-  var bottomTab = 0;
-  var leftTab = 0;
+  int topTab;
+  int rightTab;
+  int bottomTab;
+  int leftTab;
+
+  Shape({
+    this.topTab = 0,
+    this.rightTab = 0,
+    this.bottomTab = 0,
+    this.leftTab = 0,
+  });
 }

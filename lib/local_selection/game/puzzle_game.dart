@@ -1,6 +1,11 @@
 import 'dart:ui' as ui;
+import 'dart:ui';
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:choice_puzzle_app/through_api/play_session/shape_type.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/material.dart';
 import 'puzzle_piece.dart';
 import 'background_component.dart';
 
@@ -13,6 +18,21 @@ class PuzzleGame extends FlameGame {
   Vector2 boardOffset;
   final bool piecesInTray;
   bool _initialized = false;
+  final VoidCallback? onPuzzleCompleted;
+
+  @override
+  void render(Canvas canvas) {
+    final Rect rect = Rect.fromLTWH(0, 0, size.x, size.y);
+    final Paint paint =
+        Paint()
+          ..shader = LinearGradient(
+            colors: [Color(0xFF1D2B64), Color(0xFFF8CDDA)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(rect);
+    canvas.drawRect(rect, paint);
+    super.render(canvas);
+  }
 
   PuzzleGame({
     required this.puzzleImage,
@@ -22,6 +42,7 @@ class PuzzleGame extends FlameGame {
     required this.boardHeight,
     required this.boardOffset,
     this.piecesInTray = true,
+    this.onPuzzleCompleted,
   });
 
   @override
@@ -29,11 +50,7 @@ class PuzzleGame extends FlameGame {
     if (_initialized) return;
     _initialized = true;
     await super.onLoad();
-
-    // Clear any previously added components.
     children.clear();
-
-    // Add the background board.
     add(
       BackgroundComponent(
         position: boardOffset,
@@ -41,23 +58,35 @@ class PuzzleGame extends FlameGame {
         height: boardHeight,
       ),
     );
-
-    // Create exactly rows x cols puzzle pieces.
     _createPieces();
   }
 
-  // Create puzzle pieces arranged in a grid.
-  void _createPieces() {
+  void _createPieces() async {
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
-    // For initial creation, place pieces in a tray immediately below the board.
     final trayStartY = boardOffset.y + boardHeight + 30;
-    // Initially, we assume 'cols' pieces per row (this will be updated in onGameResize).
-    int index = 0;
+
+    List<Vector2> trayPositions = [];
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        trayPositions.add(
+          Vector2(boardOffset.x + j * pieceWidth, trayStartY + i * pieceHeight),
+        );
+      }
+    }
+    trayPositions.shuffle();
+
+    List<List<Shape>> shapeGrid = List.generate(
+      rows,
+      (_) => List.generate(
+        cols,
+        (_) => Shape(topTab: 0, rightTab: 0, bottomTab: 0, leftTab: 0),
+      ),
+    );
 
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        index++;
+        final int pieceIndex = i * cols + j;
         final srcX = (j * puzzleImage.width / cols).toDouble();
         final srcY = (i * puzzleImage.height / rows).toDouble();
         final srcWidth = (puzzleImage.width / cols).toDouble();
@@ -69,109 +98,100 @@ class PuzzleGame extends FlameGame {
           srcSize: Vector2(srcWidth, srcHeight),
         );
 
-        // The correct (target) position on the board.
         final correctPosition =
             boardOffset + Vector2(j * pieceWidth, i * pieceHeight);
-
-        // If piecesInTray is true, arrange them in a grid in the tray;
-        // here, initially use exactly 'cols' pieces per row.
         final initialPosition =
-            piecesInTray
-                ? Vector2(
-                  boardOffset.x + (index % cols) * pieceWidth,
-                  trayStartY + (index ~/ cols) * pieceHeight,
-                )
-                : correctPosition.clone();
-        index++;
+            piecesInTray ? trayPositions.removeAt(0) : correctPosition.clone();
+
+        // Ensuring pieces interlock correctly
+        final shape = Shape(
+          topTab:
+              (i == 0)
+                  ? 0
+                  : -shapeGrid[i - 1][j]
+                      .bottomTab, // Match top with the above piece's bottom
+          rightTab:
+              (j == cols - 1)
+                  ? 0
+                  : (j.isEven ? 1 : -1), // Alternating pattern for right
+          bottomTab:
+              (i == rows - 1)
+                  ? 0
+                  : (i.isEven ? 1 : -1), // Alternating pattern for bottom
+          leftTab:
+              (j == 0)
+                  ? 0
+                  : -shapeGrid[i][j - 1]
+                      .rightTab, // Match left with the left piece's right
+        );
+
+        shapeGrid[i][j] = shape;
 
         final piece = PuzzlePiece(
           sprite: sprite,
           correctPosition: correctPosition,
           size: Vector2(pieceWidth, pieceHeight),
           position: initialPosition,
-          pieceIndex: index,
+          pieceIndex: pieceIndex,
+          shape: shape,
+          rows: rows,
+          colums: cols,
         );
+
         add(piece);
       }
     }
   }
 
-  void checkIfSolved() {
-  int placedCount = 0;
-  int totalPieces = rows * cols;
-
-  for (final piece in children.whereType<PuzzlePiece>()) {
-    if (piece.isPlaced) {
-      placedCount++;
+  void checkIfSolved() async {
+    int placedCount =
+        children
+            .whereType<PuzzlePiece>()
+            .where((p) => p.isPlaced)
+            .length
+            .toInt();
+    FlameAudio.play('click.wav');
+    int totalPieces = rows * cols;
+    if (placedCount == totalPieces) {
+      _showCompletionDialog();
     }
   }
-
-  print("🧩 Pieces placed: $placedCount / $totalPieces");
-
-  if (placedCount == totalPieces) {
-    print("🎉 Puzzle Completed! Calling callback...");
-    _showCompletionDialog(); // Make sure this is running
-  }
-}
-
 
   bool isPuzzleSolved() {
-    for (final piece in children.whereType<PuzzlePiece>()) {
-      if (!piece.isPlaced) {
-        return false; // If any piece is not placed, puzzle is not solved
-      }
-    }
-    return true; // All pieces are correctly placed
+    return children.whereType<PuzzlePiece>().every((p) => p.isPlaced);
   }
 
   void _showCompletionDialog() {
-    overlays.add('PuzzleCompleted'); // Assuming you use overlays for UI dialogs
+    overlays.add('PuzzleCompleted');
   }
 
   void updateLayout(double gameWidth, double gameHeight) {
     onGameResize(Vector2(gameWidth, gameHeight));
   }
 
-  // onGameResize recalculates layout when the canvas size changes (e.g. on rotation).
   @override
   void onGameResize(Vector2 canvasSize) {
     super.onGameResize(canvasSize);
     final gameWidth = canvasSize.x;
     final gameHeight = canvasSize.y;
-
-    // Set board dimensions: make the board 60% of the game width (square).
     boardWidth = gameWidth * 0.73;
     boardHeight = boardWidth;
-    // Center the board horizontally and place it near the top (e.g. 15% from the top).
-    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.15);
-
-    // Update the background board.
+    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.10);
     for (final bg in children.whereType<BackgroundComponent>()) {
       bg.position = boardOffset;
       bg.width = boardWidth;
       bg.height = boardHeight;
     }
-
-    // Tray: place unsnapped pieces below the board.
     final trayStartY = boardOffset.y + boardHeight + 100;
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
-
-    // Calculate how many pieces fit horizontally in the tray.
-    // If there isn't enough space, pieces will wrap into the next row.
     final trayPiecesPerRow = (gameWidth / pieceWidth).floor();
     final trayMarginX = (gameWidth - trayPiecesPerRow * pieceWidth) / 2;
-
-    // Get the pieces sorted by pieceIndex.
-    final pieces =
-        children.whereType<PuzzlePiece>().toList()
-          ..sort((a, b) => a.pieceIndex.compareTo(b.pieceIndex));
-
-    // Update each piece's target position and tray position if not snapped.
+    final pieces = children.whereType<PuzzlePiece>().toList()..shuffle();
     for (int index = 0; index < pieces.length; index++) {
       final piece = pieces[index];
-      final int i = index ~/ cols; // Target row on board.
-      final int j = index % cols; // Target column on board.
+      final int i = piece.pieceIndex ~/ cols;
+      final int j = piece.pieceIndex % cols;
       piece.correctPosition =
           boardOffset + Vector2(j * pieceWidth, i * pieceHeight);
       if (!piece.isPlaced) {
@@ -181,5 +201,12 @@ class PuzzleGame extends FlameGame {
         );
       }
     }
+  }
+
+  PuzzlePiece? getPieceAt(int index) {
+    return children.whereType<PuzzlePiece>().firstWhere(
+      (piece) => piece.pieceIndex == index,
+      orElse: () => null as PuzzlePiece,
+    );
   }
 }

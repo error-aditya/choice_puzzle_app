@@ -1,15 +1,20 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
+// import 'package:choice_puzzle_app/through_api/style/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../game/puzzle_game.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
+import 'package:confetti/confetti.dart';
 
 class PuzzleGameScreen extends StatefulWidget {
   final Uint8List imageBytes;
   final int rows;
-  final int cols;
+  final int cols;                 
   final VoidCallback? onPuzzleCompleted;
 
   const PuzzleGameScreen({
@@ -27,10 +32,17 @@ class PuzzleGameScreen extends StatefulWidget {
 class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   PuzzleGame? game;
   bool gameLoaded = false;
-
+  int completedPuzzles = 0;
+  int requiredPuzzles = 100;
+  ConfettiController _confettiController = ConfettiController(
+    duration: const Duration(seconds: 5),
+  );
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 5),
+    );
     _initializeGame();
   }
 
@@ -39,6 +51,11 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   }
 
   Future<void> _initializeGame() async {
+    final prefs = await SharedPreferences.getInstance();
+    String key = 'completed${widget.rows}x${widget.cols}';
+    setState(() {
+      completedPuzzles = prefs.getInt(key) ?? 0; // Load saved progress
+    });
     final puzzleImage = await _loadImage(widget.imageBytes);
     // Initialize with temporary values; we'll update layout responsively.
     game = PuzzleGame(
@@ -48,29 +65,74 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
       boardWidth: 289.0,
       boardHeight: 289.0,
       boardOffset: Vector2(20, 20),
-      piecesInTray: true,
+      piecesInTray: false,
+      onPuzzleCompleted: _onPuzzleCompleted,
     );
     await game!.onLoad();
     setState(() {
       gameLoaded = true;
     });
+    print("🔄 Loaded completedPuzzles: $completedPuzzles");
+  }
+
+  void _onPuzzleCompleted() async {
+    _confettiController.play();
+    final prefs = await SharedPreferences.getInstance();
+    String key = 'completed${widget.rows}x${widget.cols}';
+    int currentCount = prefs.getInt(key) ?? 0;
+    currentCount++;
+
+    await prefs.setInt(key, currentCount);
+    setState(() {
+      completedPuzzles = currentCount;
+    });
+    print("Updated completedPuzzles: $completedPuzzles"); // Debug print
+    _updateProgress();
+  }
+
+  Path drawStar(Size size) {
+    double w = size.width, h = size.height;
+    return Path()
+      ..moveTo(w * 0.5, 0)
+      ..lineTo(w * 0.62, h * 0.38)
+      ..lineTo(w, h * 0.38)
+      ..lineTo(w * 0.68, h * 0.62)
+      ..lineTo(w * 0.8, h)
+      ..lineTo(w * 0.5, h * 0.75)
+      ..lineTo(w * 0.2, h)
+      ..lineTo(w * 0.32, h * 0.62)
+      ..lineTo(0, h * 0.38)
+      ..lineTo(w * 0.38, h * 0.38)
+      ..close();
   }
 
   // Function to show the reference image.
   void _showReferenceImage() {
     showDialog(
       context: context,
+      useSafeArea: true,
       builder:
           (context) => AlertDialog(
-            content: Image.memory(widget.imageBytes),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Close"),
-              ),
-            ],
+            backgroundColor: Colors.transparent,
+            content: Image.memory(widget.imageBytes, width: 300, height: 300),
+            // actions: [
+            //   TextButton(
+            //     onPressed: () => Navigator.pop(context),
+            //     child: const Text("Close"),
+            //   ),
+            // ],
           ),
     );
+  }
+
+  Future<void> _updateProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    String key = 'completed${widget.rows}x${widget.cols}';
+    await prefs.setInt(key, completedPuzzles);
+    if (completedPuzzles >= requiredPuzzles) {
+      await prefs.setBool('unlocked${widget.rows}x${widget.cols}', true);
+    }
+    print("Updated completedPuzzles: $completedPuzzles"); // Debug log
   }
 
   void _showCompletionDialog() {
@@ -114,8 +176,10 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                       if (game is PuzzleGame) {
                         (game as PuzzleGame).overlays.remove('PuzzleCompleted');
                       }
-                      
+                      _updateProgress();
+                      _onPuzzleCompleted();
                       Navigator.pop(context); // Close dialog
+                      Get.off(() => DashboardScreen());
                     },
                     child: const Text(
                       "OK",
@@ -136,11 +200,40 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                       ),
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ConfettiWidget(
+                      confettiController: _confettiController,
+                      gravity: .1,
+                      blastDirectionality: BlastDirectionality.explosive,
+                      shouldLoop: false,
+                      maxBlastForce: 50,
+                      minBlastForce: 10,
+                      numberOfParticles: 50,
+                      emissionFrequency: 0.3,
+                      createParticlePath: drawStar,
+                      colors: const [
+                        Colors.blue,
+                        Color(0xFF24C6DC),
+                        Colors.purple,
+                        Colors.orange,
+                        Colors.red,
+                        Colors.yellow,
+                        Colors.pinkAccent,
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
     );
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
   }
 
   @override
@@ -188,7 +281,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
             ),
             centerTitle: true,
           ),
-           body: Center(
+          body: Center(
             child: SizedBox(
               width: gameWidth,
               height: gameHeight,
@@ -196,47 +289,11 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                 game: game!,
                 overlayBuilderMap: {
                   'PuzzleCompleted': (context, game) {
-                    return Center(
-                      child: Container(
-                        width: 250,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "🎉 Puzzle Completed!",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (game is PuzzleGame) {
-                                  (game).overlays.remove(
-                                    'PuzzleCompleted',
-                                  );
-                                }
-                                Navigator.pop(context); // Close dialog
-                              },
-                              child: const Text("OK"),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    WidgetsBinding.instance?.addPostFrameCallback((_) {
+                      _showCompletionDialog();
+                      _confettiController.play();
+                    });
+                    return Container();
                   },
                 },
               ),

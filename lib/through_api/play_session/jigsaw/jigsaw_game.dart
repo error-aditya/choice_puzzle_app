@@ -88,7 +88,7 @@ class JigsawGame extends FlameGame with HasCollisionDetection {
     } else {
       print("getResult isMusicOn:$isMusicOn");
       if (added && isMusicOn) {
-        FlameAudio.play('click.wav');
+        // FlameAudio.play('click.wav');
       }
     }
   }
@@ -150,10 +150,10 @@ class JigsawGame extends FlameGame with HasCollisionDetection {
         ),
         size: Vector2(widthPerBlockTemp * _scale, heightPerBlockTemp * _scale),
       ),
-      shape,
-      pieceSize * _scale,
+      shape as double,
+      (pieceSize * _scale) as int,
       x,
-      y,
+      y as Shape,
     );
     generatePositionBottom(widthPerBlock * _scale, heightPerBlock * _scale);
     return piece;
@@ -164,7 +164,9 @@ class JigsawGame extends FlameGame with HasCollisionDetection {
   Shape _getShape(int gridSize, int x, int y) {
     final int randomPosRow = math.Random().nextInt(2).isEven ? 1 : -1;
     final int randomPosCol = math.Random().nextInt(2).isEven ? 1 : -1;
-    Shape shape = Shape();
+    Shape shape = Shape(
+
+    );
     shape.bottomTab = y == gridSize - 1 ? 0 : randomPosCol;
     shape.leftTab = x == 0 ? 0 : -pieces[y][x - 1].shape.rightTab;
     shape.rightTab = x == gridSize - 1 ? 0 : randomPosRow;

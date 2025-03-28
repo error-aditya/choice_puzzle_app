@@ -12,7 +12,7 @@ import 'piece_group.dart';
 class PieceComponent extends PositionComponent
     with DragCallbacks, CollisionCallbacks {
   bool isDebug = false;
-  Shape shape = Shape();
+  final Shape shape;
   SpriteComponent? sprite;
   late Path _path;
   late double _pieceSize;
@@ -35,12 +35,12 @@ class PieceComponent extends PositionComponent
 
   PieceComponent(
     SpriteComponent sprite,
-    Shape shape,
     double pieceSize,
     this.xSort,
     this.ySort,
+    this.shape,
   ) : super(size: sprite.size) {
-    this.shape = shape;
+    // this.shape;
     this.sprite = sprite;
     add(sprite);
     _path = Path();

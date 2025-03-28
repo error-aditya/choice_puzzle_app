@@ -38,6 +38,8 @@ dependencies:
   image_picker: ^1.1.2
   file_picker: ^9.2.0
   lucide_icons: ^0.257.0
+  get: ^4.7.2
+  confetti: ^0.8.0
 
 
 dev_dependencies:
@@ -56,6 +58,8 @@ flutter:
     - assets/sfx/
     - assets/lottie/
     - assets/audio/
+    - assets/puzzle_images/
+    - assets/puzzle_images/anime_images/
 
 flutter_icons:
   android: true
