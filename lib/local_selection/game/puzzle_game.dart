@@ -64,7 +64,7 @@ class PuzzleGame extends FlameGame {
   void _createPieces() async {
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
-    final trayStartY = boardOffset.y + boardHeight + 30;
+    final trayStartY = boardOffset.y + boardHeight + 0;
 
     List<Vector2> trayPositions = [];
     for (int i = 0; i < rows; i++) {
@@ -150,7 +150,6 @@ class PuzzleGame extends FlameGame {
             .where((p) => p.isPlaced)
             .length
             .toInt();
-    FlameAudio.play('click.wav');
     int totalPieces = rows * cols;
     if (placedCount == totalPieces) {
       _showCompletionDialog();
@@ -174,15 +173,15 @@ class PuzzleGame extends FlameGame {
     super.onGameResize(canvasSize);
     final gameWidth = canvasSize.x;
     final gameHeight = canvasSize.y;
-    boardWidth = gameWidth * 0.73;
-    boardHeight = boardWidth;
-    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.10);
+    boardWidth = gameWidth * 0.84;
+    boardHeight = boardHeight;
+    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.18);
     for (final bg in children.whereType<BackgroundComponent>()) {
       bg.position = boardOffset;
       bg.width = boardWidth;
       bg.height = boardHeight;
     }
-    final trayStartY = boardOffset.y + boardHeight + 100;
+    final trayStartY = boardOffset.y + boardHeight + 20;
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
     final trayPiecesPerRow = (gameWidth / pieceWidth).floor();

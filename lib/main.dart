@@ -193,6 +193,7 @@
 
 // local selection
 import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
+import 'package:choice_puzzle_app/local_selection/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'local_selection/screens/home_screen.dart';
@@ -214,7 +215,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           primarySwatch: Colors.blue,
         ),
-        home: DashboardScreen(),
+        home: SplashScreen(),
       ),
     );
   }

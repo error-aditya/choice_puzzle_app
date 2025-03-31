@@ -14,7 +14,7 @@ import 'package:confetti/confetti.dart';
 class PuzzleGameScreen extends StatefulWidget {
   final Uint8List imageBytes;
   final int rows;
-  final int cols;                 
+  final int cols;
   final VoidCallback? onPuzzleCompleted;
 
   const PuzzleGameScreen({
@@ -37,6 +37,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   ConfettiController _confettiController = ConfettiController(
     duration: const Duration(seconds: 5),
   );
+
   @override
   void initState() {
     super.initState();
@@ -62,10 +63,10 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
       puzzleImage: puzzleImage,
       rows: widget.rows,
       cols: widget.cols,
-      boardWidth: 289.0,
-      boardHeight: 289.0,
-      boardOffset: Vector2(20, 20),
-      piecesInTray: false,
+      boardWidth: 330.0,
+      boardHeight: 310.0,
+      boardOffset: Vector2(25, 0),
+      piecesInTray: true,
       onPuzzleCompleted: _onPuzzleCompleted,
     );
     await game!.onLoad();
@@ -111,17 +112,19 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
     showDialog(
       context: context,
       useSafeArea: true,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: Image.memory(widget.imageBytes, width: 300, height: 300),
-            // actions: [
-            //   TextButton(
-            //     onPressed: () => Navigator.pop(context),
-            //     child: const Text("Close"),
-            //   ),
-            // ],
-          ),
+      barrierDismissible: false,
+      builder: (context) {
+        Future.delayed(const Duration(seconds: 2), () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop(); // Automatically close after 3 seconds
+          }
+        });
+
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          content: Image.memory(widget.imageBytes, width: 300, height: 300),
+        );
+      },
     );
   }
 
@@ -142,6 +145,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder:
           (context) => Dialog(
             shape: RoundedRectangleBorder(
@@ -248,7 +252,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
         final gameWidth = size.width;
         final gameHeight = size.height;
 
-        game!.updateLayout(size.width, size.height);
+        // game!.updateLayout(size.width, size.height);
 
         return Scaffold(
           appBar: AppBar(
@@ -270,7 +274,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
               baseColor: Colors.white,
               highlightColor: Colors.blue[200]!,
               child: Text(
-                'PUZZLE GAME',
+                'CHOICE PUZZLE',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 24,
@@ -281,7 +285,8 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
             ),
             centerTitle: true,
           ),
-          body: Center(
+          body: Align(
+            alignment: Alignment.topCenter,
             child: SizedBox(
               width: gameWidth,
               height: gameHeight,
@@ -289,9 +294,10 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                 game: game!,
                 overlayBuilderMap: {
                   'PuzzleCompleted': (context, game) {
-                    WidgetsBinding.instance?.addPostFrameCallback((_) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
                       _showCompletionDialog();
                       _confettiController.play();
+                      _updateProgress();
                     });
                     return Container();
                   },
@@ -299,11 +305,20 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
               ),
             ),
           ),
-
-          floatingActionButton: FloatingActionButton(
-            onPressed: _showReferenceImage,
-            backgroundColor: Colors.blueAccent,
-            child: const Icon(Icons.image, color: Colors.white),
+          floatingActionButton: GestureDetector(
+            // onLongPress: _showReferenceImage,
+            onTap: () {
+              _showReferenceImage();
+            },
+            child: Container(
+              height: 55,
+              width: 55,
+              decoration: BoxDecoration(
+                color: Colors.blueAccent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.image, color: Colors.white),
+            ),
           ),
         );
       },

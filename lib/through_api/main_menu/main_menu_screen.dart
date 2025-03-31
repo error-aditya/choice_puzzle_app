@@ -28,7 +28,7 @@ class MainMenuScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Choice Puzzle Game',
+                  'Choice Puzzle',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 55,

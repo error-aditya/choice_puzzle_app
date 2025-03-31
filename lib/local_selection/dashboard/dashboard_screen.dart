@@ -87,39 +87,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         centerTitle: true,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF24C6DC), Color(0xFF514A9D)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor:
-              Colors.transparent, // Set to transparent to show the gradient
-          currentIndex: _currentIndex,
-          landscapeLayout: BottomNavigationBarLandscapeLayout.linear,
-          onTap: (value) {
-            setState(() {
-              nav(value);
-            });
-          },
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.stars_rounded),
-              label: 'Premium',
-            ),
-          ],
-        ),
-      ),
-      body: _navigation[_currentIndex],
+      // bottomNavigationBar: Container(
+      //   decoration: BoxDecoration(
+      //     gradient: LinearGradient(
+      //       colors: [Color(0xFF24C6DC), Color(0xFF514A9D)],
+      //       begin: Alignment.topLeft,
+      //       end: Alignment.bottomRight,
+      //     ),
+      //   ),
+      //   child: BottomNavigationBar(
+      //     backgroundColor:
+      //         Colors.transparent, // Set to transparent to show the gradient
+      //     currentIndex: _currentIndex,
+      //     landscapeLayout: BottomNavigationBarLandscapeLayout.linear,
+      //     onTap: (value) {
+      //       setState(() {
+      //         nav(value);
+      //       });
+      //     },
+      //     selectedItemColor: Colors.white,
+      //     unselectedItemColor: Colors.grey,
+      //     items: [
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.dashboard),
+      //         label: 'Dashboard',
+      //       ),
+      //       BottomNavigationBarItem(
+      //         icon: Icon(Icons.stars_rounded),
+      //         label: 'Premium',
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      
+      body: PremiumScreen(),
     );
   }
 }

@@ -35,7 +35,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
     {'rows': 8, 'cols': 8},
     {'rows': 9, 'cols': 9},
     {'rows': 10, 'cols': 10},
-    {'rows': 0, 'cols': 0},
+    // {'rows': 0, 'cols': 0},
   ];
 
   final List<String> assetImages = [
@@ -66,15 +66,15 @@ class _PremiumScreenState extends State<PremiumScreen> {
   ];
 
   final List<String> difficultyNames = [
-    '2x2\nPuzzle',
-    '4x4\nPuzzle',
-    '5x5\nPuzzle',
-    '6x6\nPuzzle',
-    '7x7\nPuzzle',
-    '8x8\nPuzzle',
-    '9x9\nPuzzle',
-    '10x10\nPuzzle',
-    '0x0\nPuzzle',
+    'Level 1\n4 pieces',
+    'Level 2\n16 pieces',
+    'Level 3\n25 pieces',
+    'Level 4\n36 pieces',
+    'Level 5\n49 pieces',
+    'Level 6\n64 pieces',
+    'Level 7\n81 pieces',
+    'Level 8\n100 pieces',
+    //'0x0\nPuzzle',
   ];
 
   int selectedDifficultyIndex = 0;
@@ -89,144 +89,6 @@ class _PremiumScreenState extends State<PremiumScreen> {
   void dispose() {
     _updateProgress();
     super.dispose();
-  }
-
-  Future<Map<String, int>?> _showCustomSizeDialog() async {
-    final TextEditingController rowsController = TextEditingController();
-    final TextEditingController colsController = TextEditingController();
-
-    return await showDialog<Map<String, int>>(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          backgroundColor: Colors.transparent,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF514A9D), Color(0xFF24C6DC)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Choose Your Puzzle",
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    TextField(
-                      controller: rowsController,
-                      maxLength: 2,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: 'Enter Rows',
-                        hoverColor: Colors.grey,
-                        floatingLabelStyle: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.8),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: colsController,
-                      maxLength: 2,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hoverColor: Colors.grey,
-                        hintText: "Enter Columns",
-                        filled: true,
-                        fillColor: Colors.white.withValues(
-                          red: .8,
-                          green: .8,
-                          blue: .8,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          child: Text("Cancel", style: TextStyle(fontSize: 18)),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.greenAccent[700],
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            final int? rows = int.tryParse(rowsController.text);
-                            final int? cols = int.tryParse(colsController.text);
-
-                            if (rows != null &&
-                                cols != null &&
-                                rows > 0 &&
-                                cols > 0) {
-                              Navigator.pop(context, {
-                                'rows': rows,
-                                'cols': cols,
-                              });
-                            }
-                          },
-                          child: Text("Start", style: TextStyle(fontSize: 18)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _loadAssetImage(int index, Map<String, int> difficulty) async {
@@ -253,6 +115,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
   Future<void> _loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
+    // prefs.clear();
     setState(() {
       completedPuzzles = {}; // Reset before loading
       for (var diff in difficulties) {
@@ -279,9 +142,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
   Map<String, int> difficulty = {'rows': 2, 'cols': 2};
   Future<void> _playBackgroundMusic() async {
-    await _audioPlayer.play(
-      AssetSource('music/Mr_Smith-Azul.mp3'),
-    ); // Play loop
+    if (!isPlaying) return;
+    await _audioPlayer.play(AssetSource('music/Mr_Smith-Azul.mp3'));
     _audioPlayer.setReleaseMode(ReleaseMode.loop); // Loop music
   }
 
@@ -332,13 +194,18 @@ class _PremiumScreenState extends State<PremiumScreen> {
         title: Shimmer.fromColors(
           baseColor: Colors.white,
           highlightColor: Colors.blue[200]!,
-          child: Text(
-            'PUZZLE GAME',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
+          child: AnimatedAlign(
+            duration: const Duration(milliseconds: 1000),
+            curve: Curves.bounceInOut,
+            alignment: showImages ? Alignment.centerLeft : Alignment.center,
+            child: Text(
+              'CHOICE PUZZLE',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
             ),
           ),
         ),
@@ -428,22 +295,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () async {
-                            if (index == difficulties.length - 1) {
-                              // Check if it's "Choice Puzzle"
-                              Map<String, int>? customDifficulty =
-                                  await _showCustomSizeDialog();
-                              if (customDifficulty != null) {
-                                setState(() {
-                                  difficulty = customDifficulty;
-                                  showImages = true;
-                                });
-                              }
-                            } else {
-                              setState(() {
-                                difficulty = difficulties[index];
-                                showImages = true;
-                              });
-                            }
+                            setState(() {
+                              difficulty = difficulties[index];
+                              showImages = true;
+                            });
+                            // }
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -463,6 +319,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
+                                  color: index <= 2 ? Colors.black : index >= 2 && index <= 5? Colors.yellow : Colors.red,
                                 ),
                                 textAlign: TextAlign.center,
                               ),

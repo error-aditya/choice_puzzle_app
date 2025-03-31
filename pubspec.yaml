@@ -60,6 +60,7 @@ flutter:
     - assets/audio/
     - assets/puzzle_images/
     - assets/puzzle_images/anime_images/
+    - assets/logo/
 
 flutter_icons:
   android: true

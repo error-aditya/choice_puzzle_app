@@ -35,32 +35,60 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
     int bottomEdge,
   ) {
     Path path = Path();
-    double tabWidth = width * 0.2;
-    double tabHeight = height * 0.2;
+    double tabSize = width * 0.25; // Adjust size of the tabs
+    double tabHeight = height * 0.25; // Adjust height of the tabs
 
     path.moveTo(0, 0);
 
+    // Top Edge
     if (topEdge == 0) {
-      path.lineTo(width * 0.3, 0);
-      path.quadraticBezierTo(width * 0.5, tabHeight, width * 0.7, 0);
+      path.lineTo(width * 0.25, 0);
+      path.quadraticBezierTo(width * 0.375, -tabHeight, width * 0.5, 0);
+      path.quadraticBezierTo(width * 0.625, tabHeight, width * 0.75, 0);
     }
     path.lineTo(width, 0);
 
+    // Right Edge
     if (rightEdge == 0) {
-      path.lineTo(width, height * 0.3);
-      path.quadraticBezierTo(width - tabWidth, height * 0.5, width, height * 0.7);
+      path.lineTo(width, height * 0.25);
+      path.quadraticBezierTo(
+        width + tabSize,
+        height * 0.375,
+        width,
+        height * 0.5,
+      );
+      path.quadraticBezierTo(
+        width - tabSize,
+        height * 0.625,
+        width,
+        height * 0.75,
+      );
     }
     path.lineTo(width, height);
 
+    // Bottom Edge
     if (bottomEdge == 0) {
-      path.lineTo(width * 0.7, height);
-      path.quadraticBezierTo(width * 0.5, height + tabHeight, width * 0.3, height);
+      path.lineTo(width * 0.75, height);
+      path.quadraticBezierTo(
+        width * 0.625,
+        height + tabHeight,
+        width * 0.5,
+        height,
+      );
+      path.quadraticBezierTo(
+        width * 0.375,
+        height - tabHeight,
+        width * 0.25,
+        height,
+      );
     }
     path.lineTo(0, height);
 
+    // Left Edge
     if (leftEdge == 0) {
-      path.lineTo(0, height * 0.7);
-      path.quadraticBezierTo(-tabWidth, height * 0.5, 0, height * 0.3);
+      path.lineTo(0, height * 0.75);
+      path.quadraticBezierTo(-tabSize, height * 0.625, 0, height * 0.5);
+      path.quadraticBezierTo(tabSize, height * 0.375, 0, height * 0.25);
     }
 
     path.close();
@@ -69,7 +97,7 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
 
   @override
   void render(Canvas canvas) {
-    final paint = Paint();
+    Paint paint = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 2.0;
 
     bool isLeftEdge = pieceIndex % colums == 0;
     bool isRightEdge = (pieceIndex + 1) % colums == 0;
@@ -88,14 +116,27 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
     );
     canvas.clipPath(clipPath);
 
-    drawNeighboringTexture(canvas, isLeftEdge, isRightEdge, isTopEdge, isBottomEdge);
+    drawNeighboringTexture(
+      canvas,
+      isLeftEdge,
+      isRightEdge,
+      isTopEdge,
+      isBottomEdge,
+    );
 
     sprite.render(canvas, size: size);
 
+    canvas.drawPath(clipPath, paint);
     canvas.restore();
   }
 
-  void drawNeighboringTexture(Canvas canvas, bool left, bool right, bool top, bool bottom) {
+  void drawNeighboringTexture(
+    Canvas canvas,
+    bool left,
+    bool right,
+    bool top,
+    bool bottom,
+  ) {
     final gameRef = findGame() as PuzzleGame?;
     if (gameRef == null) return;
 
@@ -118,7 +159,7 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
       PuzzlePiece? rightPiece = gameRef.getPieceAt(pieceIndex + 1);
       if (rightPiece != null) {
         canvas.save();
-        canvas.translate(size.x  -tabSize, 0);
+        canvas.translate(size.x - tabSize, 0);
         rightPiece.sprite.render(canvas, size: size);
         canvas.restore();
       }
@@ -154,6 +195,7 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
 
     final gameRef = findGame() as PuzzleGame?;
     gameRef?.checkIfSolved();
+    
   }
 
   @override
@@ -169,7 +211,9 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
 
   @override
   void onDragEnd(DragEndEvent event) {
+    super.onDragEnd(event);
     if (isCorrectlyPlaced()) {
+    FlameAudio.play('click.wav',volume: 1,);
       snapToCorrectPosition();
     } else {
       print("❌ Piece $pieceIndex is NOT in correct position.");
