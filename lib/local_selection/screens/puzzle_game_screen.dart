@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:choice_puzzle_app/controllers/progress_category_controller.dart';
 import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
 // import 'package:choice_puzzle_app/through_api/style/confetti.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:confetti/confetti.dart';
 class PuzzleGameScreen extends StatefulWidget {
   final Uint8List imageBytes;
   final int rows;
+  final String category;
   final int cols;
   final VoidCallback? onPuzzleCompleted;
 
@@ -21,6 +23,7 @@ class PuzzleGameScreen extends StatefulWidget {
     Key? key,
     required this.imageBytes,
     required this.rows,
+    required this.category,
     required this.cols,
     this.onPuzzleCompleted,
   }) : super(key: key);
@@ -37,6 +40,8 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   ConfettiController _confettiController = ConfettiController(
     duration: const Duration(seconds: 5),
   );
+
+  final PuzzleProgressController puzzleProgressController = Get.find();
 
   @override
   void initState() {
@@ -83,7 +88,11 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
     int currentCount = prefs.getInt(key) ?? 0;
     currentCount++;
 
-    await prefs.setInt(key, currentCount);
+    await puzzleProgressController.updatePuzzleCompletion(
+      widget.category,
+      widget.rows,
+      widget.cols,
+    );
     setState(() {
       completedPuzzles = currentCount;
     });
@@ -183,7 +192,8 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                       _updateProgress();
                       _onPuzzleCompleted();
                       Navigator.pop(context); // Close dialog
-                      Get.off(() => DashboardScreen());
+                      // Get.offAll(() => DashboardScreen());
+                      Get.back();
                     },
                     child: const Text(
                       "OK",

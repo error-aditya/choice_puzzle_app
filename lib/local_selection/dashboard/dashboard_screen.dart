@@ -13,7 +13,6 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
-  final List<Widget> _navigation = [HomeScreen(), PremiumScreen()];
   bool isPlaying = false;
   int completedPuzzles = 0;
   final int requiredPuzzles = 10;
@@ -119,7 +118,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       //     ],
       //   ),
       // ),
-      
       body: PremiumScreen(),
     );
   }

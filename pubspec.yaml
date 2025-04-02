@@ -58,9 +58,17 @@ flutter:
     - assets/sfx/
     - assets/lottie/
     - assets/audio/
-    - assets/puzzle_images/
-    - assets/puzzle_images/anime_images/
     - assets/logo/
+    - assets/puzzle_images/image_categories/animals/
+    - assets/puzzle_images/image_categories/anime_images/
+    - assets/puzzle_images/image_categories/cartoon/
+    - assets/puzzle_images/image_categories/illusion/
+    - assets/puzzle_images/image_categories/monuments/
+    - assets/puzzle_images/image_categories/natural/
+    - assets/puzzle_images/image_categories/person/
+    - assets/puzzle_images/image_categories/vehicles/
+    - assets/puzzle_images/image_categories/fictional/
+
 
 flutter_icons:
   android: true

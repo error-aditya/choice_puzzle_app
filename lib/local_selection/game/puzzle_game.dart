@@ -56,6 +56,7 @@ class PuzzleGame extends FlameGame {
         position: boardOffset,
         width: boardWidth,
         height: boardHeight,
+        
       ),
     );
     _createPieces();
@@ -175,13 +176,13 @@ class PuzzleGame extends FlameGame {
     final gameHeight = canvasSize.y;
     boardWidth = gameWidth * 0.84;
     boardHeight = boardHeight;
-    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.18);
+    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.10);
     for (final bg in children.whereType<BackgroundComponent>()) {
       bg.position = boardOffset;
       bg.width = boardWidth;
       bg.height = boardHeight;
     }
-    final trayStartY = boardOffset.y + boardHeight + 20;
+    final trayStartY = boardOffset.y + boardHeight + 30;
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
     final trayPiecesPerRow = (gameWidth / pieceWidth).floor();

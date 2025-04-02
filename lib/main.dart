@@ -192,11 +192,9 @@
 // }
 
 // local selection
-import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
 import 'package:choice_puzzle_app/local_selection/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'local_selection/screens/home_screen.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 
@@ -207,16 +205,14 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Puzzle App',
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          primarySwatch: Colors.blue,
-        ),
-        home: SplashScreen(),
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Choice Puzzle',
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        primarySwatch: Colors.blue,
       ),
+      home: SplashScreen(),
     );
   }
 }

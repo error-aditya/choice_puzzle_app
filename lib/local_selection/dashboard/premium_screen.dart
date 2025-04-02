@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
+import 'package:choice_puzzle_app/controllers/category_controller.dart';
+// import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
+import 'package:choice_puzzle_app/local_selection/screens/image_generate.dart';
 import 'package:choice_puzzle_app/local_selection/screens/puzzle_game_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +25,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
   bool showImages = false;
   bool isBack = false;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  // String? selectedCategory;
+  final CategoryController categoryController = Get.put(CategoryController());
 
   bool isPlaying = false;
 
@@ -38,44 +42,122 @@ class _PremiumScreenState extends State<PremiumScreen> {
     // {'rows': 0, 'cols': 0},
   ];
 
-  final List<String> assetImages = [
-    'assets/puzzle_images/doraemon.svg',
-    'assets/puzzle_images/anime_images/pirate_flag.jpg',
-    'assets/puzzle_images/car.jpg',
-    'assets/puzzle_images/anime_images/luffy_gear5.jpg',
-    'assets/puzzle_images/dressed_cat.jpg',
-    'assets/puzzle_images/super_mario.png',
-    'assets/puzzle_images/eye.jpg',
-    'assets/puzzle_images/anime_images/strawhats.jpg',
-    'assets/puzzle_images/anime_images/luffy.jpg',
-    'assets/puzzle_images/illusion_2.jpg',
-    'assets/puzzle_images/fox.jpg',
-    'assets/puzzle_images/minar.jpg',
-    'assets/puzzle_images/mountain.jpg',
-    'assets/puzzle_images/puppies.jpg',
-    'assets/puzzle_images/anime_images/luffy.jpg',
-    'assets/puzzle_images/illusion_3.jpg',
-    'assets/puzzle_images/motu_patlu.jpg',
-    'assets/puzzle_images/space_earth_photo.jpg',
-    'assets/puzzle_images/sunset_bird.jpg',
-    'assets/puzzle_images/tiger.jpg',
-    'assets/puzzle_images/trees_1.jpg',
-    'assets/puzzle_images/illusion_1.jpg',
-    'assets/puzzle_images/anime_images/timeskip_with_sunny.jpg',
-    'assets/puzzle_images/anime_images/naruto.svg',
-  ];
+  final Map<String, List<String>> categorizedImages = {
+    'Animals': [
+      'assets/puzzle_images/image_categories/animals/blackbuck.jpg',
+      'assets/puzzle_images/image_categories/animals/elephant.jpg',
+      'assets/puzzle_images/image_categories/animals/cat.jpg',
+      'assets/puzzle_images/image_categories/animals/dressed_cat.jpg',
+      'assets/puzzle_images/image_categories/animals/eagle.jpg',
+      'assets/puzzle_images/image_categories/animals/frog.jpg',
+      'assets/puzzle_images/image_categories/animals/horses.jpg',
+      'assets/puzzle_images/image_categories/animals/ostrich.jpg',
+      'assets/puzzle_images/image_categories/animals/parrot.jpg',
+      'assets/puzzle_images/image_categories/animals/peacock.jpg',
+      'assets/puzzle_images/image_categories/animals/puppies.jpg',
+      'assets/puzzle_images/image_categories/animals/tiger.jpg',
+    ],
+    'Anime': [
+      'assets/puzzle_images/image_categories/anime_images/pirate_flag.jpg',
+      'assets/puzzle_images/image_categories/anime_images/luffy.jpg',
+      'assets/puzzle_images/image_categories/anime_images/nezuko_chan.jpg',
+      'assets/puzzle_images/image_categories/anime_images/timeskip_with_sunny.jpg',
+      'assets/puzzle_images/image_categories/anime_images/strawhats.jpg',
+      'assets/puzzle_images/image_categories/anime_images/naruto.svg',
+      'assets/puzzle_images/image_categories/anime_images/luffy_gear5.jpg',
+    ],
+    'Cartoon': [
+      'assets/puzzle_images/image_categories/cartoon/bal_ganesh.jpg',
+      'assets/puzzle_images/image_categories/cartoon/mickey_mouse.jpg',
+      'assets/puzzle_images/image_categories/cartoon/doraemon.svg',
+      'assets/puzzle_images/image_categories/cartoon/tom_and_jerry.jpg',
+      'assets/puzzle_images/image_categories/cartoon/sinchan.jpg',
+      'assets/puzzle_images/image_categories/cartoon/minions.jpg',
+      'assets/puzzle_images/image_categories/cartoon/krishna.jpg',
+      'assets/puzzle_images/image_categories/cartoon/motu_patlu.jpg',
+      'assets/puzzle_images/image_categories/cartoon/oggy_and_cockroaches.jpg',
+      'assets/puzzle_images/image_categories/cartoon/spiderman.jpg',
+      'assets/puzzle_images/image_categories/cartoon/super_mario.png',
+      'assets/puzzle_images/image_categories/cartoon/fox.jpg',
+    ],
+    'Illusion': [
+      'assets/puzzle_images/image_categories/illusion/board_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/spinning_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/ladder_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/illusion_1.jpg',
+      'assets/puzzle_images/image_categories/illusion/holi_colors_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/greek_abstraction_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/illusion_2.jpg',
+      'assets/puzzle_images/image_categories/illusion/zebra_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/color_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/chain_illusion.jpg',
+      'assets/puzzle_images/image_categories/illusion/illusion_3.jpg',
+      'assets/puzzle_images/image_categories/illusion/square_illusion.jpg',
+    ],
+    'Natural': [
+      'assets/puzzle_images/image_categories/natural/himalayas.jpg',
+      'assets/puzzle_images/image_categories/natural/morpunkh.jpg',
+      'assets/puzzle_images/image_categories/natural/mountain.jpg',
+      'assets/puzzle_images/image_categories/natural/pink_roses.jpg',
+      'assets/puzzle_images/image_categories/natural/railway_line.jpg',
+      'assets/puzzle_images/image_categories/natural/space_earth_photo.jpg',
+      'assets/puzzle_images/image_categories/natural/sunset_bird.jpg',
+      'assets/puzzle_images/image_categories/natural/sunset.jpg',
+      'assets/puzzle_images/image_categories/natural/trees_1.jpg',
+      'assets/puzzle_images/image_categories/natural/walking_bridge.jpg',
+      'assets/puzzle_images/image_categories/natural/water_drop.jpg',
+      'assets/puzzle_images/image_categories/natural/waterfall.jpg',
+    ],
+    'Monuments': [
+      'assets/puzzle_images/image_categories/monuments/christ_the_redeemer.jpg',
+      'assets/puzzle_images/image_categories/monuments/eiffel_tower.jpg',
+      'assets/puzzle_images/image_categories/monuments/giza_pyramid.jpg',
+      'assets/puzzle_images/image_categories/monuments/red_fort.jpg',
+      'assets/puzzle_images/image_categories/monuments/taj_mahal.jpg',
+      'assets/puzzle_images/image_categories/monuments/statue_of_unity.jpg',
+      'assets/puzzle_images/image_categories/monuments/colosseum.jpg',
+      'assets/puzzle_images/image_categories/monuments/minar.jpg',
+    ],
+    'Person': ['assets/puzzle_images/image_categories/person/eye.jpg'],
+    'Vehicles': ['assets/puzzle_images/image_categories/vehicles/car.jpg'],
+    'Fictional' : [
+      'assets/puzzle_images/image_categories/fictional/fictional_1.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_2.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_3.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_4.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_5.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_6.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_7.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_8.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_9.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_10.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_11.jpg',
+      'assets/puzzle_images/image_categories/fictional/fictional_12.jpg',
+    ],
+  };
 
   final List<String> difficultyNames = [
-    'Level 1\n4 pieces',
-    'Level 2\n16 pieces',
-    'Level 3\n25 pieces',
-    'Level 4\n36 pieces',
-    'Level 5\n49 pieces',
-    'Level 6\n64 pieces',
-    'Level 7\n81 pieces',
-    'Level 8\n100 pieces',
+    '4 pieces',
+    '16 pieces',
+    '25 pieces',
+    '36 pieces',
+    '49 pieces',
+    '64 pieces',
+    '81 pieces',
+    '100 pieces',
     //'0x0\nPuzzle',
   ];
+
+  final Map<String, int> categoryProgress = {
+    'Animals': 0,
+    'Anime': 0,
+    'Cartoon': 0,
+    'Illusion': 0,
+    'Natural': 0,
+    'Monuments': 0,
+    'Person': 0,
+    'Vehicles': 0,
+  };
 
   int selectedDifficultyIndex = 0;
 
@@ -87,30 +169,68 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
   @override
   void dispose() {
-    _updateProgress();
+    _updateProgress(categorizedImages.keys.first);
     super.dispose();
   }
 
-  Future<void> _loadAssetImage(int index, Map<String, int> difficulty) async {
+  Future<void> _loadAssetImage(
+    int index,
+    Map<String, dynamic> difficulty,
+  ) async {
+    if (categoryController.selectedCategory.value == null) {
+      print('Error: No category selected.');
+      return;
+    }
+
+    String selectedCategories = categoryController.selectedCategory.value;
+
     int userRows = difficulty['rows']!;
     int userCols = difficulty['cols']!;
 
-    // Load image bytes from assets
-    ByteData data = await rootBundle.load(assetImages[index]);
-    Uint8List bytes = data.buffer.asUint8List();
+    if (!categorizedImages.containsKey(selectedCategories)) {
+      print(
+        'Error: Selected filter "$selectedCategories" is not found in categories.',
+      );
+      return;
+    }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => PuzzleGameScreen(
-              imageBytes: bytes,
-              rows: userRows,
-              cols: userCols,
-              onPuzzleCompleted: () => _updateProgress(),
-            ),
-      ),
-    );
+    List<String> images = categorizedImages[selectedCategories] ?? [];
+
+    if (images.isEmpty) {
+      print('Error: No images found in the selected category.');
+      return;
+    }
+
+    if (index < 0 || index >= images.length) {
+      print(
+        'Error: Index out of range. Index: $index, Available images: ${images.length}',
+      );
+      return;
+    }
+
+    String imagePath = images[index];
+
+    try {
+      ByteData data = await rootBundle.load(imagePath);
+      Uint8List bytes = data.buffer.asUint8List();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) => PuzzleGameScreen(
+                category: selectedCategories,
+                imageBytes: bytes,
+                rows: userRows,
+                cols: userCols,
+                onPuzzleCompleted: () => _updateProgress(selectedCategories),
+              ),
+        ),
+      );
+    } catch (e) {
+      print('Error loading image: $imagePath');
+      print(e);
+    }
   }
 
   Future<void> _loadProgress() async {
@@ -118,6 +238,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
     // prefs.clear();
     setState(() {
       completedPuzzles = {}; // Reset before loading
+      categoryProgress.forEach((category, progress) {
+        completedPuzzles[category] = prefs.getInt('peogress_$category') ?? 0;
+      });
       for (var diff in difficulties) {
         String key = 'completed${diff['rows']}x${diff['cols']}';
         completedPuzzles[key] = prefs.getInt(key) ?? 0;
@@ -126,21 +249,22 @@ class _PremiumScreenState extends State<PremiumScreen> {
     print("Loaded completedPuzzles: $completedPuzzles"); // Debug log
   }
 
-  Future<void> _updateProgress() async {
+  Future<void> _updateProgress(String category) async {
     final prefs = await SharedPreferences.getInstance();
-    String key = 'completed${difficulty['rows']}x${difficulty['cols']}';
-    int updatedProgress = (prefs.getInt(key) ?? 0) + 1;
-    await prefs.setInt(key, updatedProgress);
+    // String key = 'completed${difficulties[selectedDifficultyIndex]['rows']}x${difficulties[selectedDifficultyIndex]['cols']}';
+    int updatedProgress = (prefs.getInt('progress_$category') ?? 0) + 1;
+    await prefs.setInt('progress_$category', updatedProgress);
 
     setState(() {
-      completedPuzzles[key] = updatedProgress;
+      completedPuzzles[category] = updatedProgress;
     });
-    // print(
-    //   "Updated progress for ${currentDifficulty['rows']}x${currentDifficulty['cols']}: $updatedProgress",
-    // );
+    print(
+      "Updated progress: $updatedProgress for ${difficulties[selectedDifficultyIndex]['rows']}x${difficulties[selectedDifficultyIndex]['cols']}",
+    );
   }
 
   Map<String, int> difficulty = {'rows': 2, 'cols': 2};
+
   Future<void> _playBackgroundMusic() async {
     if (!isPlaying) return;
     await _audioPlayer.play(AssetSource('music/Mr_Smith-Azul.mp3'));
@@ -155,17 +279,6 @@ class _PremiumScreenState extends State<PremiumScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon:
-              showImages
-                  ? Icon(Icons.arrow_back_ios, color: Colors.white)
-                  : Icon(Icons.arrow_forward_ios, color: Colors.white),
-          onPressed: () {
-            setState(() {
-              showImages = false;
-            });
-          },
-        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -194,18 +307,13 @@ class _PremiumScreenState extends State<PremiumScreen> {
         title: Shimmer.fromColors(
           baseColor: Colors.white,
           highlightColor: Colors.blue[200]!,
-          child: AnimatedAlign(
-            duration: const Duration(milliseconds: 1000),
-            curve: Curves.bounceInOut,
-            alignment: showImages ? Alignment.centerLeft : Alignment.center,
-            child: Text(
-              'CHOICE PUZZLE',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-              ),
+          child: Text(
+            'CHOICE PUZZLE',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
             ),
           ),
         ),
@@ -226,108 +334,71 @@ class _PremiumScreenState extends State<PremiumScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 10),
-                showImages
-                    ? GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 1.0,
+                GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemCount: difficultyNames.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (categoryController.selectedCategory.value == null) {
+                          print('Error: No category selected.');
+                          return;
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => ImageGenerate(
+                                  categorizedImages: categorizedImages,
+                                  completedPuzzles: completedPuzzles,
+                                  difficulty: difficulties[index],
+                                  loadAssetImage: (
+                                    int index,
+                                    Map<String, dynamic> difficulty,
+                                  ) {
+                                    return _loadAssetImage(
+                                      index,
+                                      difficulty,
+                                    ); // No need to specify category again
+                                  },
+                                ),
                           ),
-                      itemCount: assetImages.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        String key =
-                            'completed${difficulty['rows']}x${difficulty['cols']}';
-                        int completedIndex = completedPuzzles[key] ?? 0;
-                        bool isUnlocked = index == 0 || index <= completedIndex;
-                        return GestureDetector(
-                          onTap: () async {
-                            if (isUnlocked) {
-                              _loadAssetImage(index, difficulty);
-                            }
-                          },
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.asset(
-                                  assetImages[index],
-                                  fit: BoxFit.cover,
-                                  colorBlendMode:
-                                      isUnlocked ? null : BlendMode.darken,
-                                  color:
-                                      isUnlocked
-                                          ? null
-                                          : const Color.fromARGB(131, 0, 0, 0),
-                                ),
-                              ),
-                              if (!isUnlocked)
-                                Positioned.fill(
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Icon(
-                                      Icons.lock,
-                                      size: 50,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: RadialGradient(
+                            colors: [
+                              Color.fromARGB(255, 56, 151, 224),
+                              Color.fromARGB(255, 31, 196, 214),
                             ],
                           ),
-                        );
-                      },
-                    )
-                    : GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.8,
-                          ),
-                      itemCount: difficultyNames.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () async {
-                            setState(() {
-                              difficulty = difficulties[index];
-                              showImages = true;
-                            });
-                            // }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: RadialGradient(
-                                colors: [
-                                  Color.fromARGB(255, 56, 151, 224),
-                                  Color.fromARGB(255, 31, 196, 214),
-                                ],
-                              ),
-                              color: Colors.white,
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            difficultyNames[index],
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
-                            child: Center(
-                              child: Text(
-                                difficultyNames[index],
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: index <= 2 ? Colors.black : index >= 2 && index <= 5? Colors.yellow : Colors.red,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),

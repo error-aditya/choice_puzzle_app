@@ -12,7 +12,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  double _opacity = 1.0;
+  double _opacity = 0.0;
 
   @override
   void initState() {
@@ -20,21 +20,22 @@ class _SplashScreenState extends State<SplashScreen>
     // Initialize animation controller but don't start it yet
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1), // 1-second expansion effect
+      duration: Duration(seconds: 3), // 1-second expansion effect
     );
 
     // Scale Animation (expands after 1 second)
-    _animation = Tween<double>(begin: 1.0, end: 5.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn),
-    );
+    _animation = Tween<double>(
+      begin: 3.80,
+      end: 0.80,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.ease));
 
     // Start animation after 1 second delay
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 1), () {
       _controller.forward(); // Start expanding animation
 
       // Fade out while expanding
       setState(() {
-        _opacity = 0.0;
+        _opacity = 1.0;
       });
 
       // Navigate to DashboardScreen after animation completes
@@ -64,20 +65,26 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
         child: Center(
-          child: AnimatedOpacity(
-            duration: Duration(milliseconds: 1000), // 1-second fade-out
-            opacity: _opacity,
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _animation.value,
-                  child: Image.asset(
-                    'assets/logo/app_logo.png',
-                    fit: BoxFit.contain,
-                  ),
-                );
-              },
+          child: Container(
+            padding: EdgeInsets.all(25),
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 2000), // 2-second fade-out
+              opacity: _opacity,
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _animation.value,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        'assets/logo/app_logo_crop.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
