@@ -6,7 +6,7 @@ import 'package:flame/events.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
-class PuzzlePiece extends PositionComponent with DragCallbacks {
+class PuzzlePiece extends PositionComponent with DragCallbacks, TapCallbacks {
   final Sprite sprite;
   Vector2 correctPosition;
   final int pieceIndex;
@@ -55,7 +55,7 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
         width + tabSize,
         height * 0.375,
         width,
-        height * 0.5,
+        height * 0.51,
       );
       path.quadraticBezierTo(
         width - tabSize,
@@ -97,12 +97,57 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
 
   @override
   void render(Canvas canvas) {
-    Paint paint = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 2.0;
+    Paint paint =
+        Paint()
+          ..color = Colors.black
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2.0;
 
     bool isLeftEdge = pieceIndex % colums == 0;
     bool isRightEdge = (pieceIndex + 1) % colums == 0;
     bool isTopEdge = pieceIndex < colums;
     bool isBottomEdge = pieceIndex >= (rows - 1) * colums;
+    if (!isPlaced) {
+      canvas.save();
+
+      // Move canvas to where the piece *should* go
+      canvas.translate(
+        correctPosition.x - position.x,
+        correctPosition.y - position.y,
+      );
+
+      // Create the same jigsaw shape for shadow
+      bool isLeftEdge = pieceIndex % colums == 0;
+      bool isRightEdge = (pieceIndex + 1) % colums == 0;
+      bool isTopEdge = pieceIndex < colums;
+      bool isBottomEdge = pieceIndex >= (rows - 1) * colums;
+
+      Path shadowPath = createJigsawPath(
+        size.x,
+        size.y,
+        isLeftEdge ? 1 : 0,
+        isRightEdge ? 1 : 0,
+        isTopEdge ? 1 : 0,
+        isBottomEdge ? 1 : 0,
+      );
+
+      // Shadow paint
+      final paint =
+          Paint()
+            ..color = const ui.Color.fromARGB(255, 164, 57, 57).withOpacity(0.15)
+            ..style = PaintingStyle.fill;
+
+      canvas.drawPath(shadowPath, paint);
+      canvas.drawPath(
+        shadowPath,
+        Paint()
+          ..color = Colors.black.withOpacity(0.2)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = .5,
+      );
+
+      canvas.restore();
+    }
 
     canvas.save();
 
@@ -195,8 +240,34 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
 
     final gameRef = findGame() as PuzzleGame?;
     gameRef?.checkIfSolved();
-    
+
+    // 🔍 Bring overlapping pieces to front
+    if (parent != null && gameRef != null) {
+      final List<PuzzlePiece> overlappingPieces =
+          gameRef.children.whereType<PuzzlePiece>().where((otherPiece) {
+            return otherPiece != this &&
+                !otherPiece.isPlaced &&
+                (otherPiece.position - position).length < size.x * 0.5;
+          }).toList();
+
+      for (final piece in overlappingPieces) {
+        piece.removeFromParent();
+        parent?.add(piece);
+      }
+    }
   }
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+
+    if (!isPlaced) {
+      final parentRef = parent;
+      removeFromParent();
+      parentRef?.add(this); // ✅ bring to front only if draggable
+    }
+  }
+  
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
@@ -205,15 +276,22 @@ class PuzzlePiece extends PositionComponent with DragCallbacks {
     }
   }
 
+  @override
+  void onTapDown(TapDownEvent event) {
+    final parentRef = parent;
+    removeFromParent();
+    parentRef?.add(this); // bring to front on tap
+  }
+
   bool isCorrectlyPlaced() {
-    return (position - correctPosition).length < 5.0;
+    return (position - correctPosition).length < 20.0;
   }
 
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
     if (isCorrectlyPlaced()) {
-    FlameAudio.play('click.wav',volume: 1,);
+      FlameAudio.play('click.wav', volume: 1);
       snapToCorrectPosition();
     } else {
       print("❌ Piece $pieceIndex is NOT in correct position.");

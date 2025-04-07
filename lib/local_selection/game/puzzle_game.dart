@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'puzzle_piece.dart';
 import 'background_component.dart';
 
@@ -56,7 +57,6 @@ class PuzzleGame extends FlameGame {
         position: boardOffset,
         width: boardWidth,
         height: boardHeight,
-        
       ),
     );
     _createPieces();
@@ -176,13 +176,13 @@ class PuzzleGame extends FlameGame {
     final gameHeight = canvasSize.y;
     boardWidth = gameWidth * 0.84;
     boardHeight = boardHeight;
-    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.10);
+    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.09);
     for (final bg in children.whereType<BackgroundComponent>()) {
       bg.position = boardOffset;
       bg.width = boardWidth;
       bg.height = boardHeight;
     }
-    final trayStartY = boardOffset.y + boardHeight + 30;
+    final trayStartY = boardOffset.y + boardHeight + 40;
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
     final trayPiecesPerRow = (gameWidth / pieceWidth).floor();
@@ -209,4 +209,45 @@ class PuzzleGame extends FlameGame {
       orElse: () => null as PuzzlePiece,
     );
   }
+
+  int remainingHelplines = 5;
+
+  // void useHelpline() {
+  //   if (remainingHelplines > 0) {
+  //     // Find a random unplaced piece
+  //     final unplaced =
+  //         children.whereType<PuzzlePiece>().where((p) => !p.isPlaced).toList();
+  //     if (unplaced.isNotEmpty) {
+  //       final piece = unplaced.first; // or random
+  //       piece.showHelplineShadow();
+  //       remainingHelplines--;
+  //       print("🆘 Helpline used. Remaining: $remainingHelplines");
+  //     }
+  //   } else {
+  //     Get.snackbar(
+  //       backgroundGradient: LinearGradient(
+  //         colors: [Color(0xFFa8edea), Color(0xFFfed6e3)],
+  //       ),
+  //       snackStyle: SnackStyle.FLOATING,
+  //       snackPosition: SnackPosition.BOTTOM,
+
+  //       isDismissible: true,
+  //       backgroundColor: Colors.white,
+  //       margin: EdgeInsets.only(right: 10, left: 10, bottom: 3),
+  //       '',
+  //       '',
+  //       titleText: Text(
+  //         'You have Used All Your Lifeline',
+  //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+  //       ),
+  //       messageText: Text(
+  //         'No !',
+  //         style: TextStyle(fontSize: 15),
+  //       ),
+  //       // duration: Duration(milliseconds: 1700),
+  //     );
+  //     print("⚠️ No more Helpline uses left.");
+  //   }
+  // }
+
 }

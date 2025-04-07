@@ -197,16 +197,16 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      // color: Colors.red,
+      checkerboardOffscreenLayers: true,
+      smartManagement: SmartManagement.full,
       title: 'Choice Puzzle',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,

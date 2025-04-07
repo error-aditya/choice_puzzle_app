@@ -6,7 +6,8 @@
     <uses-feature android:name="android.hardware.camera"/>
 
     <application
-        android:label="choice_puzzle_app"
+        android:allowBackup="true"
+        android:label="Choice Puzzle"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
@@ -30,6 +31,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false"/>
+
     </application>
     <!-- Required for text processing queries -->
     <queries>

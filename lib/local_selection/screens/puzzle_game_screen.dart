@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:choice_puzzle_app/controllers/progress_category_controller.dart';
-import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
-// import 'package:choice_puzzle_app/through_api/style/confetti.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +17,7 @@ class PuzzleGameScreen extends StatefulWidget {
   final String category;
   final int cols;
   final VoidCallback? onPuzzleCompleted;
+  final bool isReplay;
 
   const PuzzleGameScreen({
     Key? key,
@@ -26,6 +26,7 @@ class PuzzleGameScreen extends StatefulWidget {
     required this.category,
     required this.cols,
     this.onPuzzleCompleted,
+    this.isReplay = false,
   }) : super(key: key);
 
   @override
@@ -38,16 +39,17 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   int completedPuzzles = 0;
   int requiredPuzzles = 100;
   ConfettiController _confettiController = ConfettiController(
-    duration: const Duration(seconds: 5),
+    duration: const Duration(seconds: 1),
   );
 
   final PuzzleProgressController puzzleProgressController = Get.find();
+  AudioPlayer? _player;
 
   @override
   void initState() {
     super.initState();
     _confettiController = ConfettiController(
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 1),
     );
     _initializeGame();
   }
@@ -83,21 +85,27 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 
   void _onPuzzleCompleted() async {
     _confettiController.play();
-    final prefs = await SharedPreferences.getInstance();
-    String key = 'completed${widget.rows}x${widget.cols}';
-    int currentCount = prefs.getInt(key) ?? 0;
-    currentCount++;
 
-    await puzzleProgressController.updatePuzzleCompletion(
-      widget.category,
-      widget.rows,
-      widget.cols,
-    );
-    setState(() {
-      completedPuzzles = currentCount;
-    });
-    print("Updated completedPuzzles: $completedPuzzles"); // Debug print
-    _updateProgress();
+    if (!widget.isReplay) {
+      final prefs = await SharedPreferences.getInstance();
+      String key = 'completed${widget.rows}x${widget.cols}';
+      int currentCount = prefs.getInt(key) ?? 0;
+      currentCount++;
+
+      await puzzleProgressController.updatePuzzleCompletion(
+        widget.category,
+        widget.rows,
+        widget.cols,
+        currentCount,
+        requiredPuzzles,
+      );
+      setState(() {
+        completedPuzzles = currentCount;
+      });
+      await _updateProgress(); // Save updated progress
+    } else {
+      print("✅ Play Again mode: Progress count is not updated.");
+    }
   }
 
   Path drawStar(Size size) {
@@ -117,24 +125,31 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   }
 
   // Function to show the reference image.
+  bool isDialogOpen = false; // Add this flag
+
   void _showReferenceImage() {
+    if (isDialogOpen) return;
+
+    isDialogOpen = true;
     showDialog(
       context: context,
-      useSafeArea: true,
-      barrierDismissible: false,
+      barrierDismissible: false, // Prevent accidental dismiss
       builder: (context) {
-        Future.delayed(const Duration(seconds: 2), () {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop(); // Automatically close after 3 seconds
-          }
-        });
-
         return AlertDialog(
           backgroundColor: Colors.transparent,
           content: Image.memory(widget.imageBytes, width: 300, height: 300),
         );
       },
-    );
+    ).then((_) {
+      isDialogOpen = false; // Reset flag when dialog is dismissed
+    });
+  }
+
+  void _hideReferenceImage() {
+    if (isDialogOpen) {
+      Navigator.of(context).pop(); // Close the dialog if it's open
+      isDialogOpen = false;
+    }
   }
 
   Future<void> _updateProgress() async {
@@ -185,15 +200,17 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (game is PuzzleGame) {
                         (game as PuzzleGame).overlays.remove('PuzzleCompleted');
                       }
                       _updateProgress();
                       _onPuzzleCompleted();
-                      Navigator.pop(context); // Close dialog
+                      await _player?.stop(); // In OK button
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      // Close dialog
                       // Get.offAll(() => DashboardScreen());
-                      Get.back();
                     },
                     child: const Text(
                       "OK",
@@ -215,7 +232,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                     ),
                   ),
                   Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.topCenter,
                     child: ConfettiWidget(
                       confettiController: _confettiController,
                       gravity: .1,
@@ -223,7 +240,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                       shouldLoop: false,
                       maxBlastForce: 50,
                       minBlastForce: 10,
-                      numberOfParticles: 50,
+                      numberOfParticles: 100,
                       emissionFrequency: 0.3,
                       createParticlePath: drawStar,
                       colors: const [
@@ -246,7 +263,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 
   @override
   void dispose() {
-    _confettiController.dispose();
+    _confettiController.stop();
     super.dispose();
   }
 
@@ -266,6 +283,19 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 
         return Scaffold(
           appBar: AppBar(
+            actions: [
+              IconButton(
+                onPressed: () {
+                  // final puzzleGame = game as PuzzleGame;
+                  // puzzleGame.useHelpline();
+                },
+                icon: Icon(
+                  Icons.lightbulb_outline_sharp,
+                  color: Colors.black,
+                  size: 30,
+                ),
+              ),
+            ],
             backgroundColor: Colors.transparent,
             elevation: 0,
             flexibleSpace: Container(
@@ -304,10 +334,13 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                 game: game!,
                 overlayBuilderMap: {
                   'PuzzleCompleted': (context, game) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
                       _showCompletionDialog();
+                      // FlameAudio.play('confetti3.mp3', volume: 1);
+                      _player = await FlameAudio.play('confetti3.mp3');
                       _confettiController.play();
                       _updateProgress();
+                      // _confettiController.stop();
                     });
                     return Container();
                   },
@@ -315,11 +348,9 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
               ),
             ),
           ),
-          floatingActionButton: GestureDetector(
-            // onLongPress: _showReferenceImage,
-            onTap: () {
-              _showReferenceImage();
-            },
+          floatingActionButton: Listener(
+            onPointerDown: (event) => _showReferenceImage(),
+            onPointerUp: (event) => _hideReferenceImage(),
             child: Container(
               height: 55,
               width: 55,
