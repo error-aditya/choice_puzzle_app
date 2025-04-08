@@ -40,6 +40,8 @@ dependencies:
   lucide_icons: ^0.257.0
   get: ^4.7.2
   confetti: ^0.8.0
+  flutter_animate: ^4.5.2
+  flutter_glow: ^0.3.2
 
 
 dev_dependencies:
@@ -73,6 +75,6 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/logo/app_logo3.png"
+  image_path: "assets/logo/app_logo_main.png"
   adaptive_icon_background: "#FFFFFF"
   # adaptive_icon_foreground: "assets/icon-adaptive-foreground.png"

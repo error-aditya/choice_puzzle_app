@@ -134,14 +134,14 @@ class PuzzlePiece extends PositionComponent with DragCallbacks, TapCallbacks {
       // Shadow paint
       final paint =
           Paint()
-            ..color = const ui.Color.fromARGB(255, 164, 57, 57).withOpacity(0.15)
+            ..color = const ui.Color.fromARGB(255, 240, 231, 231).withOpacity(.1)
             ..style = PaintingStyle.fill;
 
       canvas.drawPath(shadowPath, paint);
       canvas.drawPath(
         shadowPath,
         Paint()
-          ..color = Colors.black.withOpacity(0.2)
+          ..color = Colors.black.withOpacity(0.3)
           ..style = PaintingStyle.stroke
           ..strokeWidth = .5,
       );
@@ -284,7 +284,7 @@ class PuzzlePiece extends PositionComponent with DragCallbacks, TapCallbacks {
   }
 
   bool isCorrectlyPlaced() {
-    return (position - correctPosition).length < 20.0;
+    return (position - correctPosition).length < 30.0;
   }
 
   @override

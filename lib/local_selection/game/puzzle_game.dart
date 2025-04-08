@@ -209,45 +209,4 @@ class PuzzleGame extends FlameGame {
       orElse: () => null as PuzzlePiece,
     );
   }
-
-  int remainingHelplines = 5;
-
-  // void useHelpline() {
-  //   if (remainingHelplines > 0) {
-  //     // Find a random unplaced piece
-  //     final unplaced =
-  //         children.whereType<PuzzlePiece>().where((p) => !p.isPlaced).toList();
-  //     if (unplaced.isNotEmpty) {
-  //       final piece = unplaced.first; // or random
-  //       piece.showHelplineShadow();
-  //       remainingHelplines--;
-  //       print("🆘 Helpline used. Remaining: $remainingHelplines");
-  //     }
-  //   } else {
-  //     Get.snackbar(
-  //       backgroundGradient: LinearGradient(
-  //         colors: [Color(0xFFa8edea), Color(0xFFfed6e3)],
-  //       ),
-  //       snackStyle: SnackStyle.FLOATING,
-  //       snackPosition: SnackPosition.BOTTOM,
-
-  //       isDismissible: true,
-  //       backgroundColor: Colors.white,
-  //       margin: EdgeInsets.only(right: 10, left: 10, bottom: 3),
-  //       '',
-  //       '',
-  //       titleText: Text(
-  //         'You have Used All Your Lifeline',
-  //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-  //       ),
-  //       messageText: Text(
-  //         'No !',
-  //         style: TextStyle(fontSize: 15),
-  //       ),
-  //       // duration: Duration(milliseconds: 1700),
-  //     );
-  //     print("⚠️ No more Helpline uses left.");
-  //   }
-  // }
-
 }

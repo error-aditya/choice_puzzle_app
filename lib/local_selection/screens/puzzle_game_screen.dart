@@ -48,6 +48,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   @override
   void initState() {
     super.initState();
+    FlameAudio.play('game_start.mp3', volume: 1);
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 1),
     );
@@ -85,7 +86,6 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
 
   void _onPuzzleCompleted() async {
     _confettiController.play();
-
     if (!widget.isReplay) {
       final prefs = await SharedPreferences.getInstance();
       String key = 'completed${widget.rows}x${widget.cols}';
@@ -171,90 +171,93 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
       context: context,
       barrierDismissible: false,
       builder:
-          (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 16,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "🎉 Puzzle Completed!",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Congratulations on completing the puzzle!",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (game is PuzzleGame) {
-                        (game as PuzzleGame).overlays.remove('PuzzleCompleted');
-                      }
-                      _updateProgress();
-                      _onPuzzleCompleted();
-                      await _player?.stop(); // In OK button
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      // Close dialog
-                      // Get.offAll(() => DashboardScreen());
-                    },
-                    child: const Text(
-                      "OK",
+          (context) => WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 16,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "🎉 Puzzle Completed!",
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.green, // Text color
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Congratulations on completing the puzzle!",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: ConfettiWidget(
-                      confettiController: _confettiController,
-                      gravity: .1,
-                      blastDirectionality: BlastDirectionality.explosive,
-                      shouldLoop: false,
-                      maxBlastForce: 50,
-                      minBlastForce: 10,
-                      numberOfParticles: 100,
-                      emissionFrequency: 0.3,
-                      createParticlePath: drawStar,
-                      colors: const [
-                        Colors.blue,
-                        Color(0xFF24C6DC),
-                        Colors.purple,
-                        Colors.orange,
-                        Colors.red,
-                        Colors.yellow,
-                        Colors.pinkAccent,
-                      ],
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (game is PuzzleGame) {
+                          (game as PuzzleGame).overlays.remove(
+                            'PuzzleCompleted',
+                          );
+                        }
+                        _updateProgress();
+                        _onPuzzleCompleted();
+                        await _player?.stop(); // In OK button
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "OK",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.green, // Text color
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: ConfettiWidget(
+                        confettiController: _confettiController,
+                        gravity: .1,
+                        blastDirectionality: BlastDirectionality.explosive,
+                        shouldLoop: false,
+                        maxBlastForce: 50,
+                        minBlastForce: 10,
+                        numberOfParticles: 100,
+                        emissionFrequency: 0.3,
+                        createParticlePath: drawStar,
+                        colors: const [
+                          Colors.blue,
+                          Color(0xFF24C6DC),
+                          Colors.purple,
+                          Colors.orange,
+                          Colors.red,
+                          Colors.yellow,
+                          Colors.pinkAccent,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -272,97 +275,191 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
     if (!gameLoaded || game == null) {
       return Scaffold(body: const Center(child: CircularProgressIndicator()));
     }
-
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        final size = MediaQuery.of(context).size;
-        final gameWidth = size.width;
-        final gameHeight = size.height;
-
-        // game!.updateLayout(size.width, size.height);
-
-        return Scaffold(
-          appBar: AppBar(
-            actions: [
-              IconButton(
-                onPressed: () {
-                  // final puzzleGame = game as PuzzleGame;
-                  // puzzleGame.useHelpline();
-                },
-                icon: Icon(
-                  Icons.lightbulb_outline_sharp,
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        bool shouldExit = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF24C6DC),
+              title: const Text(
+                'Are you sure?',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              content: const Text(
+                'Are you sure you want to go back?',
+                style: TextStyle(
                   color: Colors.black,
-                  size: 30,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ],
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF24C6DC),
-                    Color(0xFF514A9D),
-                  ], // Cool Gradient
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-            title: Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: Colors.blue[200]!,
-              child: Text(
-                'CHOICE PUZZLE',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-            centerTitle: true,
-          ),
-          body: Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: gameWidth,
-              height: gameHeight,
-              child: GameWidget(
-                game: game!,
-                overlayBuilderMap: {
-                  'PuzzleCompleted': (context, game) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      _showCompletionDialog();
-                      // FlameAudio.play('confetti3.mp3', volume: 1);
-                      _player = await FlameAudio.play('confetti3.mp3');
-                      _confettiController.play();
-                      _updateProgress();
-                      // _confettiController.stop();
-                    });
-                    return Container();
+              actions: [
+                TextButton(
+                  child: const Text(
+                    'No',
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // Block back
                   },
+                ),
+                TextButton(
+                  child: const Text(
+                    'Yes',
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                  onPressed: () {
+                    FlameAudio.play('back_navigation.mp3', volume: 1);
+                    Navigator.of(context).pop(true); // Allow back
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return shouldExit == true;
+      },
+      child: OrientationBuilder(
+        builder: (context, orientation) {
+          final size = MediaQuery.of(context).size;
+          final gameWidth = size.width;
+          final gameHeight = size.height;
+
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: Color(0xFF24C6DC),
+                        title: Text(
+                          'Are you sure?',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        content: Text(
+                          'Are you sure you want to go back?',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            child: Text(
+                              'No',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              FlameAudio.play(
+                                'back_navigation1.mp3',
+                                volume: 1,
+                              );
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
               ),
-            ),
-          ),
-          floatingActionButton: Listener(
-            onPointerDown: (event) => _showReferenceImage(),
-            onPointerUp: (event) => _hideReferenceImage(),
-            child: Container(
-              height: 55,
-              width: 55,
-              decoration: BoxDecoration(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(10),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF24C6DC),
+                      Color(0xFF514A9D),
+                    ], // Cool Gradient
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
               ),
-              child: const Icon(Icons.image, color: Colors.white),
+              title: Shimmer.fromColors(
+                baseColor: Colors.white,
+                highlightColor: const Color.fromARGB(255, 14, 17, 111),
+                child: Text(
+                  'CHOICE PUZZLE',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              centerTitle: true,
             ),
-          ),
-        );
-      },
+            body: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: gameWidth,
+                height: gameHeight,
+                child: GameWidget(
+                  game: game!,
+                  overlayBuilderMap: {
+                    'PuzzleCompleted': (context, game) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) async {
+                        // FlameAudio.play('confetti3.mp3', volume: 1);
+                        _player = await FlameAudio.play('confetti3.mp3');
+                        _showCompletionDialog();
+                        // _confettiController.play();
+                        _updateProgress();
+                      });
+                      return Container();
+                    },
+                  },
+                ),
+              ),
+            ),
+            floatingActionButton: Listener(
+              onPointerDown: (event) => _showReferenceImage(),
+              onPointerUp: (event) => _hideReferenceImage(),
+              child: Container(
+                height: 55,
+                width: 55,
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.image, color: Colors.white),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

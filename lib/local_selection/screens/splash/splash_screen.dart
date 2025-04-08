@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:choice_puzzle_app/local_selection/dashboard/dashboard_screen.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    FlameAudio.play('splash_sound.mp3', volume: 1);
     // Initialize animation controller but don't start it yet
     _controller = AnimationController(
       vsync: this,
@@ -42,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
       _controller.addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           Get.off(() => DashboardScreen());
+          FlameAudio.bgm.stop();
         }
       });
     });
@@ -78,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.asset(
-                        'assets/logo/app_logo3_crop.png',
+                        'assets/logo/splash_image.png',
                         fit: BoxFit.contain,
                       ),
                     ),
