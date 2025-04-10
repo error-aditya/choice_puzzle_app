@@ -74,7 +74,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
       context: context,
       boardWidth: 330.0,
       boardHeight: 310.0,
-      boardOffset: Vector2(25, 0),
+      boardOffset: Vector2(20, 0),
       piecesInTray: true,
       onPuzzleCompleted: _onPuzzleCompleted,
     );
@@ -86,7 +86,6 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
   }
 
   void _onPuzzleCompleted() async {
-    _confettiController.play();
     if (!widget.isReplay) {
       final prefs = await SharedPreferences.getInstance();
       String key = 'completed${widget.rows}x${widget.cols}';
@@ -316,7 +315,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                     style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
                   onPressed: () {
-                    FlameAudio.play('back_navigation.mp3', volume: 1);
+                    FlameAudio.play('back_navigation1.mp3', volume: 1);
                     Navigator.of(context).pop(true); // Allow back
                   },
                 ),
@@ -433,10 +432,10 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                   overlayBuilderMap: {
                     'PuzzleCompleted': (context, game) {
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        // FlameAudio.play('confetti3.mp3', volume: 1);
-                        _player = await FlameAudio.play('confetti3.mp3');
+                        // FlameAudio.play('confetti3.mp3', volume: 1);     
                         _showCompletionDialog();
-                        // _confettiController.play();
+                        _player = await FlameAudio.play('confetti3.mp3');
+                        _confettiController.play();
                         _updateProgress();
                       });
                       return Container();

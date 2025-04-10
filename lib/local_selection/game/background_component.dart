@@ -13,11 +13,12 @@ class BackgroundComponent extends PositionComponent {
   }) : super(position: position, size: Vector2(width, height));
 
   @override
-  void render(Canvas canvas) {  
-    final paint = Paint()
-      ..color = Color(0xFFCCCCCC)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0;
-    canvas.drawRect(size.toRect(), paint);
+  void render(Canvas canvas) {
+    final paint =
+        Paint()
+          ..color = Color(0xFFCCCCCC)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.0;
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), paint);
   }
 }

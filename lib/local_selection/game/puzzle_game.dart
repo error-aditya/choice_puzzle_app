@@ -53,7 +53,7 @@ class PuzzleGame extends FlameGame {
 
     boardWidth = screenWidth * 0.84;
     boardHeight = screenHeight * 0.39;
-    boardOffset = Vector2((screenWidth - boardWidth) / 2, screenHeight * 0.09);
+    boardOffset = Vector2((screenWidth - boardWidth) / 2, screenHeight * 0.08);
   }
 
   @override
@@ -200,7 +200,7 @@ class PuzzleGame extends FlameGame {
 
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
-    final trayStartY = boardOffset.y + boardHeight + 16;
+    final trayStartY = boardOffset.y + boardHeight + 10;
 
     final trayPiecesPerRow = (screenWidth / pieceWidth).floor();
     final trayMarginX = (screenWidth - trayPiecesPerRow * pieceWidth) / 2;
