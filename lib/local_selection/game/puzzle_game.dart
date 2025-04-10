@@ -1,12 +1,9 @@
 import 'dart:ui' as ui;
-import 'dart:ui';
-// import 'package:audioplayers/audioplayers.dart';
+// import 'dart:ui';
 import 'package:choice_puzzle_app/through_api/play_session/shape_type.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'puzzle_piece.dart';
 import 'background_component.dart';
 
@@ -20,6 +17,7 @@ class PuzzleGame extends FlameGame {
   final bool piecesInTray;
   bool _initialized = false;
   final VoidCallback? onPuzzleCompleted;
+  final BuildContext context;
 
   @override
   void render(Canvas canvas) {
@@ -36,6 +34,7 @@ class PuzzleGame extends FlameGame {
   }
 
   PuzzleGame({
+    required this.context,
     required this.puzzleImage,
     required this.rows,
     required this.cols,
@@ -44,7 +43,18 @@ class PuzzleGame extends FlameGame {
     required this.boardOffset,
     this.piecesInTray = true,
     this.onPuzzleCompleted,
-  });
+  }) {
+    _setInitialLayout();
+  }
+  void _setInitialLayout() {
+    final mediaSize = MediaQuery.of(context).size;
+    final screenWidth = mediaSize.width;
+    final screenHeight = mediaSize.height;
+
+    boardWidth = screenWidth * 0.84;
+    boardHeight = screenHeight * 0.39;
+    boardOffset = Vector2((screenWidth - boardWidth) / 2, screenHeight * 0.09);
+  }
 
   @override
   Future<void> onLoad() async {
@@ -172,28 +182,39 @@ class PuzzleGame extends FlameGame {
   @override
   void onGameResize(Vector2 canvasSize) {
     super.onGameResize(canvasSize);
-    final gameWidth = canvasSize.x;
-    final gameHeight = canvasSize.y;
-    boardWidth = gameWidth * 0.84;
-    boardHeight = boardHeight;
-    boardOffset = Vector2((gameWidth - boardWidth) / 2, gameHeight * 0.09);
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    boardWidth = screenWidth * 0.84;
+    boardHeight = screenHeight * 0.39;
+
+    boardOffset = Vector2((screenWidth - boardWidth) / 2, screenHeight * 0.08);
+
+    // Update background
     for (final bg in children.whereType<BackgroundComponent>()) {
       bg.position = boardOffset;
       bg.width = boardWidth;
       bg.height = boardHeight;
     }
-    final trayStartY = boardOffset.y + boardHeight + 40;
+
     final pieceWidth = boardWidth / cols;
     final pieceHeight = boardHeight / rows;
-    final trayPiecesPerRow = (gameWidth / pieceWidth).floor();
-    final trayMarginX = (gameWidth - trayPiecesPerRow * pieceWidth) / 2;
+    final trayStartY = boardOffset.y + boardHeight + 16;
+
+    final trayPiecesPerRow = (screenWidth / pieceWidth).floor();
+    final trayMarginX = (screenWidth - trayPiecesPerRow * pieceWidth) / 2;
+
     final pieces = children.whereType<PuzzlePiece>().toList()..shuffle();
     for (int index = 0; index < pieces.length; index++) {
       final piece = pieces[index];
       final int i = piece.pieceIndex ~/ cols;
       final int j = piece.pieceIndex % cols;
+
       piece.correctPosition =
           boardOffset + Vector2(j * pieceWidth, i * pieceHeight);
+      piece.size = Vector2(pieceWidth, pieceHeight);
+
       if (!piece.isPlaced) {
         piece.position = Vector2(
           trayMarginX + (index % trayPiecesPerRow) * pieceWidth,

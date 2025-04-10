@@ -71,6 +71,7 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
       puzzleImage: puzzleImage,
       rows: widget.rows,
       cols: widget.cols,
+      context: context,
       boardWidth: 330.0,
       boardHeight: 310.0,
       boardOffset: Vector2(25, 0),
