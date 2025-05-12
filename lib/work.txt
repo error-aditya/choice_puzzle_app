@@ -1,0 +1,345 @@
+-> Task Addition
+-> Task Edit/Delete
+-> Notification on Alert Time
+-> Filter Tasks - Today/Completed/Pending/Upcoming/Overdue/Selected Date
+-> Notification Selection 
+-> Task Priority Selection - Must/Medium/Low
+-> BackgroundTheme dark/light
+-> Login/SignUp
+-> Used HiveBox "taskk" for tasks details storage
+-> Used HIveBox "users" for login and sign up details storage
+-> Enable/Disable Notification for each task and for whole system
+-> Working on a feature : You will get notification on your location 
+-> Used google maps api for fetching longitude and latitude 
+-> created task model for storing string,datetime and double values in Hive database
+-> Used Getx state management for managing state
+-> Used Future<> function for working on future activites
+-> Used List for manupulating with data
+
+
+
+10-2-25:
+-> Updated UI of login,signup,settings,todopage.
+-> Add location icon to get details about the selected location.
+-> Removed the delete icon.
+-> Add filter section to buildfiltertile.
+-> Add lucide icons for filtertile buttons.
+
+12-02-25:
+-> Modify search screen functionality.
+-> Add location icon to get details about the selected location.
+-> Updated edit task UI.
+-> launched release mode of apk.
+-> Working on some issue in release mode.
+- GraphQL
+- sqlite, mysql
+- json conversion
+- event handler
+- queue,map,stack,list,....(dart:collection)
+- shared preferences
+
+13-02-25:
+-> Added grid view option for task display with list view.
+-> Changed all icons using Lucide Icons.
+-> Added Confetti for task completion.
+-> Created a new screen for displaying details of tasks.
+
+14-02-25:
+-> Added status for regognizing the task completion in searchBar.
+-> Added 2 filter, Completed in range & Pending in range.
+-> Modified the filter section & remove the overdue section.
+
+17-02-25:
+-> Watch videos of Getx state management in flutter.
+-> Practiced Getx state management method.
+
+18-02-25:
+-> Run the application on ios.
+-> Configured plugins in ios.
+
+19-02-25:
+-> Learn api request in flutter.
+-> practiced Getx state management.
+
+20-02-25:
+-> Learn sqflite in flutter.
+-> Practiced Api integration using mongoDB and NodeJs.
+
+21-02-25:
+-> Learn dart collections.
+-> Learn Asynchronous functionality.
+
+22-02-25:
+-> Learn widgets and dart programming.
+
+24-02-25:
+-> Learn conditional programming & widgets in flutter.
+
+25-02-25:
+-> Did changes in GoDo(In Task Add & Task Edit).
+-> Fix issues while rotating the app.
+-> Learn flutter widgets.
+
+26-02-25:
+-> Learned and practiced flutter widgets.
+
+27-02-25:
+-> Learn custom widget and callback function.
+-> Modified confetti in GoDo.
+-> Updated UI in the task.
+
+28-02-25:
+-> Learn about widgets, passing data between screens & animation in flutter.
+-> Modified the location details at gridview & updated snackbar of completed task.
+
+03-03-25:
+-> Modified Background UI in GoDo.
+-> Solve the notification error.
+-> Watch different types of animation widgets in flutter & shared preferences.
+
+04-03-25:
+-> Learn & Practiced sqlite in flutter.
+
+05-03-25:
+-> Learn & Practiced State management with provider.
+
+06-03-25:
+-> Learn state Management in flutter with Getx.
+-> Learn how to deploy application on Google Playstore.
+
+07-03-25:
+-> Learn state managememnt with Getx.
+-> Practiced Slider animation in BuildYaar.
+-> Creating a clone of a Applicaation given by Yash Sir.
+
+10-03-25:
+-> Practicing Material Components.
+-> Working on clone app of color_paint.
+
+11-03-25:
+-> Practiced Material Components.
+
+12-03-25:
+-> practiced Material Components.       
+-> Created QR code with own data.
+
+13-03-25:
+-> Learned new widgets in flutter.
+-> Working on puzzle app.
+
+17-03-25:
+-> Modified puzzle app.
+-> Working on converting the local image in the puzzle piece.
+-> Learn flame in flutter(2d game engine).
+
+18-03-25:
+-> Implemented feature where you can pick image and make pieces to solve the puzzle.
+-> Having complexity converted multiple numbers of pieces for image. 
+-> Created 3 OnBoarding screens and a welcome screen for "College project".
+
+19-03-25:
+-> created user and admin side functionality for the project.
+-> User: Place order, Check order, Track order, Pay bills, Feedbacks, Chat Support and User can receive notifications.
+-> Admin: Generate Report for orders, Admin side chat, Admin can send notifiations, View orders, View by date.
+-> Admin can receive, cancel and deliver the order by his side.
+-> Added a small FAQ for application.
+-> Used Getx state management for managing data.
+
+20-03-25:
+-> Completed all the screens in the drawer.
+-> Used getx state managememnt for the data management.
+-> Created controller for the drawer management..
+-> remaining: image and logo display.
+
+21-03-25:
+-> Completed the UI for the whole appliction.
+-> Solved the issue of dialer in organizer.
+-> Created language localizations for gujarati.
+-> remaining: language switcher.
+
+24-03-25:
+-> Fixed the language Conversion to gujarati.
+-> Fixed the navigation in drawer while having gujarati language.
+-> Add background music to puzzle app.
+-> Add puzzle levels according to pieces levels(2x2, 4x4...).
+-> Added feature where You can only access the next level after completing the first one.
+
+25-03-25:
+-> Added gradient to Ui.
+-> Added puzzle levels in gridview.
+-> After clicking puzzle levels it will show the list of images in gridview.
+-> Converted asset images into respective pieces after selection.
+
+26-03-25:
+-> Added confetti after the puzzle is solved.
+-> Added lock/unlock for the image display.
+-> Added feature where you can only access the next level after completing the first one.
+-> Modify choice puzzle dialogbox UI.
+-> Added navigation between load image and difficulty selection screen.
+-> Stored the count of total puzzle solved using shared preferences.
+
+27-03-25:
+-> Solved problem: when you solve puzzle from any other difficulty, it unlocks image in 2x2.
+-> Added a sound effect when the piece is placed correctly.
+-> Added gradient colors in selecting difficulties for puzzle and for game screen also.
+-> Used shared preferences for updating the levels info and unlocking them.
+-> Details addtion in ranbhumi.
+
+28-03-25:
+-> Added a jigsaw shape to piece edges using Path.
+-> Created logic that identify the piece edges and after placing correct place will have a sound.
+-> Changes in ranbhumi(android Configuration).
+
+31-03-25:
+-> Updated Ranbhumi(Modified app name, Modify the image display with CachedImageNetwork).
+-> Added splash screen with logo in choice puzzle.
+-> Added animation at title while showing the images.
+-> Modified the shape of the puzzle piece.
+-> Added level identification by applying colors.
+
+01-04-25:
+-> Updated the issue of navigation.
+-> Created other file for loading images.
+-> Added multiple category like Animals, Cartoon, Illusion, Natural, Monuments... for the multiple choices for user.
+-> Added dropdown button for category selection.
+
+02-04-25:
+-> Modified splash screen with new animation.
+-> Added a new category fictional.
+-> Updated UI for drop down button in category selection screen.
+-> Fixed issue for lock and unlock in categories.
+-> Adjusted height of the playing board in puzzle game screen for extra space.
+-> Used category_controller & progress_category_controller for 
+   managing the state for category images unlocking and loading images at game screen.
+
+03-04-25:
+-> Fixed size of gamescreen.
+-> Added animation in locking / unlocking image after completing puzzle.
+-> Added confetti at image category display screen with unlocking animation.
+-> Modified reference image at longpress.
+
+04-04-25:
+-> Fixed animation duration while unlocking the next image.
+-> Added sound effects at completion of puzzle and at unlocking the image.
+-> Fixed long pressed for showing the image.
+-> Modified the UI of image display screen and main screen.
+-> Added snackars and dialogbox for displaying the inforamation.
+-> Fixed the issue of image unlock while solving any puzzle with replaying and don't update the count to unlock image.
+-> Only play sound of level up when the next image is unlocked.
+-> You can play the solved puzzle again with tapping on play again in the dialog box.
+
+07-04-25:
+-> Added app icon and logo for the app.
+-> Modified UI in the level selection screen, added logo in the all grid and designed the gridbox.
+-> Created a frosted effect for the next image hiding like blur effect.
+-> Modified the lock icon area.
+-> Added new images for the vehicles.
+-> Added shadow shapes for the references on the Gameboard.
+-> Modified the correctly piece detection on the board(expand the radius for detecting).
+-> Created a feature of giving hint for user interaction.
+
+
+08-04-25:
+-> Modified UI of premium screen.
+-> Added new logo.
+-> Added sound effects at multiple functions, added alertbox and snackbars for handling the navigation.
+-> Fixed the system back navigation issue for snackbars and task completion.
+-> Added Images to vehicles and anime & removed the illusion category.
+-> Added animation at premium screen and image generate screen.
+
+10-04-25:
+-> Fixed the issue, the game screen was different in multiple devices, solved with media query.
+-> Made login authentication for the college project with SMS OTP using mobile number.
+-> Created a login and otp page with animation using lottie animation.
+-> Modified the splash screen for puzzle app and appBars in whole app.
+
+11-04-25:
+-> Learn payment integration methods.
+-> Integrate razorpay for payment feature.
+-> Modified UI of whole application with theme.
+-> Changed place order Ui and added some fields.
+
+14-04-25:
+-> Created 5 UI for the happy shopper.
+-> Fixed the issues in size and layout.
+
+15-04-25:
+-> Set the splash screen bottom as per the figma design.
+-> Created validation for the fields.
+-> Modify all screens for minor bugs.
+-> Added flag country code for phone number.
+
+17-04-25:
+-> Did the correction in The happy shopper authentication screens.
+-> Apply validation to every field.
+-> Fixed the issue of error display in the validation.
+-> Corrected the UI for the consistant UI for all the screen.
+
+18-04-25:
+-> Corrected every field's validation points.
+-> Changed the functionality of showing the login screen and register screen.
+-> Solved the issue of keyboard rendering even after changing the screen and solved the keyboard dismissed issue after typing a number in phone number field.
+
+21-04-25:
+-> Corrected the addrees field for expanding after line ends.
+-> Fixed in phoneNumber field for excepting  only numbers.
+-> Added animation in between the tabs.
+-> Added alertbox at system back at login screen.
+-> Corrected for register screen, will go at login after system back navigation.
+
+22-04-25:
+-> Added animation in between the screen.
+-> Also changed the tab indicator while switching the tabs.
+-> Created shopping screen.
+-> Changed the color of all prices.
+
+23-04-25:
+-> Correction in animation.
+-> Watch videos of Android jetpack.
+
+24-04-25:
+-> Learning kotlin basics.
+
+25-04-25:
+-> Learned and practiced kotlin conditions, for loop, method overloading, data types.
+
+28-04-25:
+-> Learned OOP in kotlin , default parameters and loops.
+
+29-04-25:
+-> Learned and practiced singleton object, lazy initialization, Enum class, Inner class,
+   Sealed class, Abstract class, Interface, Object expression and Inheritance in kotlin.
+
+30-04-25:
+-> Learned and practiced Collection operation, Zipping, UnZipping, Association, Flatten, String Representation, Filtering, Partition, Testing predicates,
+   Plus and Minus operators, Grouping, Driven Collection parts, Slice, Take & Drop, Chunked, Windowed, Ordering, Linear Search & Binary Search.
+
+02-04-25:
+-> Practiced jetpack components.
+-> Practiced Rows, columns, basic sizing modifiers, image card composable, text styling, textfields.
+
+05-05-25:
+-> Practiced Lists, Constrained Layout, effectHandlers, simple animations, animated circular progress Bar.
+
+06-05-25:
+-> Practiced navigation in jetpack.
+-> Created a timer ticking in jetpack.
+-> Started Making clone of The Happy Shopper using jetpack compose.
+
+07-05-25:
+-> Created splash, login , register, forgot password and password changed screen in jetpack compose.
+
+08-05-25:
+-> Created tabBar for the login and register switching.
+-> Added eye button in password field for viewing password.
+-> Added navigation to login,register,forgot passward and changed password screen.
+-> Fixed the layout for all screen.
+
+12-05-25:
+-> Applied animation in between screen changes.
+-> Did validation in all the fields for login, register and forgot password.
+-> Solved the issue of redering in navigation.
+-> Apply animation with navigating screens of login and register.
+-> Added dialog box on exit of the app on login screen.
+-> On register screen back button / onBack(), it will go to login screen.
+-> Swipe naviagtion for login and register screen.

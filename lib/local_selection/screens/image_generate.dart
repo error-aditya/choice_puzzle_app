@@ -103,8 +103,9 @@ class _ImageGenerateState extends State<ImageGenerate> {
             ),
           ),
           title: Shimmer.fromColors(
-            baseColor: Colors.white,
-            highlightColor: const Color.fromARGB(255, 14, 17, 111),
+            baseColor: Color.fromARGB(255, 0, 0, 0),
+            direction: ShimmerDirection.rtl,
+            highlightColor: const Color.fromARGB(255, 255, 255, 255),
             child: Text(
               'CHOICE PUZZLE',
               textAlign: TextAlign.center,
@@ -172,7 +173,7 @@ class _ImageGenerateState extends State<ImageGenerate> {
                             );
                           }).toList(),
                       onChanged: (String? newValue) {
-                        FlameAudio.play('category_tap.mp3',volume: 1);
+                        FlameAudio.play('category_tap.mp3', volume: 1);
                         setState(() {
                           categoryController.selectedCategory.value = newValue!;
                           print(
@@ -218,7 +219,7 @@ class _ImageGenerateState extends State<ImageGenerate> {
                           child: GestureDetector(
                             onTap: () async {
                               if (!isUnlocked) {
-                                FlameAudio.play('lock.mp3',volume: 1);
+                                FlameAudio.play('lock.mp3', volume: 1);
                                 bool hasShownSnackbar = false;
                                 if (!hasShownSnackbar) {
                                   Get.snackbar(

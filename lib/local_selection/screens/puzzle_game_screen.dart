@@ -408,15 +408,16 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                 ),
               ),
               title: Shimmer.fromColors(
-                baseColor: Colors.white,
-                highlightColor: const Color.fromARGB(255, 14, 17, 111),
+                baseColor: Color.fromARGB(255, 0, 0, 0),
+                direction: ShimmerDirection.rtl,
+                highlightColor: const Color.fromARGB(255, 255, 255, 255),
                 child: Text(
                   'CHOICE PUZZLE',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
                   ),
                 ),
               ),
@@ -432,10 +433,10 @@ class _PuzzleGameScreenState extends State<PuzzleGameScreen> {
                   overlayBuilderMap: {
                     'PuzzleCompleted': (context, game) {
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        // FlameAudio.play('confetti3.mp3', volume: 1);     
+                        // FlameAudio.play('confetti3.mp3', volume: 1);
+                        _confettiController.play();
                         _showCompletionDialog();
                         _player = await FlameAudio.play('confetti3.mp3');
-                        _confettiController.play();
                         _updateProgress();
                       });
                       return Container();

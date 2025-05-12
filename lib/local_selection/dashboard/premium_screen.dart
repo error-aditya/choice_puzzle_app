@@ -219,9 +219,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
           children: [
             // SizedBox(width: 40),
             Shimmer.fromColors(
-              baseColor: Color.fromARGB(255, 255, 255, 255),
+              baseColor: Color.fromARGB(255, 0, 0, 0),
               direction: ShimmerDirection.rtl,
-              highlightColor: const Color.fromARGB(255, 14, 17, 111),
+              highlightColor: const Color.fromARGB(255, 255, 255, 255),
               child: Text(
                 'CHOICE',
                 textAlign: TextAlign.center,
@@ -236,9 +236,9 @@ class _PremiumScreenState extends State<PremiumScreen> {
             Image.asset('assets/logo/icon.png', height: 50),
             SizedBox(width: 5),
             Shimmer.fromColors(
-              baseColor: Color.fromARGB(255, 255, 255, 255),
+              baseColor: Color.fromARGB(255, 0, 0, 0),
               direction: ShimmerDirection.rtl,
-              highlightColor: const Color.fromARGB(255, 14, 17, 111),
+              highlightColor: const Color.fromARGB(255, 255, 255, 255),
               child: Text(
                 'PUZZLE',
                 textAlign: TextAlign.center,
